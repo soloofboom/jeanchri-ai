@@ -258,6 +258,7 @@ body.cursor-actif .cursor {
 	font-size: clamp(56px, 12.5vw, 210px);
 	line-height: .84;
 	letter-spacing: -.035em;
+	margin-bottom: clamp(8px, 1.8vh, 20px);
 }
 
 .titre .ligne { display: block; }
