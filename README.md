@@ -1,6 +1,6 @@
 # jeanchri-dark
 
-**dark — l'alibi de jeanChri.**
+**dark, l'alibi de jeanChri.**
 
 Ce site est un agent : une part de la personnalité de jeanChri, prélevée puis
 transformée en intelligence artificielle, à qui mandat est donné de prendre part

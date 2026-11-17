@@ -1,4 +1,4 @@
-/* dark.jeanchri.com — interactions
+/* dark.jeanchri.com : interactions
    Vanilla JS, aucune dépendance. Tout est neutralisé si prefers-reduced-motion. */
 
 (() => {
@@ -61,6 +61,10 @@
 		let chemin = null;
 		let poussieres = [];
 		let lumiere = null;
+		let ascii = null;
+		let asciiFond = null;
+		const curseur = { x: -9999, y: -9999, dans: false };
+		
 		let cadres = { x: 0, y: 0, w: 0, h: 0 };
 		let decalage = 0;
 		let decalageCible = 0;
@@ -81,6 +85,33 @@
 		const profil = demi.concat(
 			demi.slice(0, -1).reverse().map(([x, y]) => [1 - x, y])
 		);
+
+		// logo Rif (grenouille) rendu en ASCII, 54 colonnes
+		const RIF = [
+			'                                 -%@@@@%-    :%@@@@=    ',
+			'                                %@@*--+%@%  -@@=. .--   ',
+			'                               #%: :---- -%@@#+:=%@@@   ',
+			'                             .*=-@@@@@@@@#:@@@@@@@*=-   ',
+			'                           .#@@@:*@@@@@@#.@@@@@@@@@@@%: ',
+			'                         .%@@@@@@%==--+=%@@@@@@@@@@@@@@+',
+			'                       --.#@@@@@@@@@@@@@@@#:------------',
+			'                   -#@@@@@*.+@@@@@@@@@@@#:#@@@@@@@@@@@@=',
+			'               .+@@@@@@@@@@@%--%@@@@@@#:#@@@@@@@@@@@#-  ',
+			'             -%@@@@@@@@@@@@@@@@+.#@@%:*@@@@@@%:         ',
+			'           -@@@@@#-@@@@@@@@@@@@@@* .+@@@@@@@--%         ',
+			'         -:+%@@%:+%:-@@@@@@@@@@@%:*@@@@@@@-:%@-         ',
+			'       -@@@@#.:=@@@@@:-@@@@@@@%:*@@@@@@@-:%@@-          ',
+			'      #@@@@@:-@@@@@@@@@--@@@%:#@@@@@@@=:%@@@-           ',
+			'    .@@@@@:-@@@@@@@@@@@@@--:*@@@@@@@=:%@@@%.            ',
+			'   .@@@@--@@@@@@: *@@@@@@@@@@@@@@@+ #@@@@---            ',
+			'  .@@@--@@@@@@--@@+.#@@@@@@@@@@@+.= @@@=:@@@%           ',
+			'  @@--@@@@@@-:@@@@@@-.#@@@@@@@+.#@@ @+:%@@@@@*          ',
+			' .--@@@@@@=.%@@@@@@@@@-:%@@@+.#@@@%  :@@@@@@@@:         ',
+			' :@@*==*###*-:=#@@@@@@@%::*.#@@@@@@#=: :#@@@@@@@@@#*-   ',
+			'=#:*@@@@@@@@@@@+ -@@@@@@@%.:@@@@@@@@@@@@+:#@@@@@@@@@@@%-'
+		];
+
+		const RAMPE = ' .:-=+*#%@';
 
 		const courbe = (pts) => {
 			const p = new Path2D();
@@ -132,6 +163,48 @@
 			lumiere.addColorStop(0.78, 'rgba(242,240,250,.10)');
 			lumiere.addColorStop(1.00, 'rgba(242,240,250,.02)');
 
+			// calque ASCII du logo Rif, rendu une seule fois
+			const cibleW = cadres.w * 0.58;
+			const cellW = cibleW / RIF[0].length;
+			const cellH = cellW * 2;
+			ascii = document.createElement('canvas');
+			ascii.width = Math.ceil(cibleW);
+			ascii.height = Math.ceil(cellH * RIF.length);
+			const ca = ascii.getContext('2d');
+			ca.font = `${(cellW / 0.6).toFixed(1)}px "JetBrains Mono", ui-monospace, monospace`;
+			ca.textBaseline = 'top';
+			for (let r = 0; r < RIF.length; r++) {
+				for (let c = 0; c < RIF[r].length; c++) {
+					const ch = RIF[r][c];
+					if (ch === ' ') continue;
+					const densite = RAMPE.indexOf(ch);
+					const a = densite < 0 ? 0.28 : 0.10 + densite * 0.055;
+					ca.fillStyle = `rgba(168,120,255,${a.toFixed(3)})`;
+					ca.fillText(ch, c * cellW, r * cellH);
+				}
+			}
+
+			// fond : la silhouette tapissée de caractères pâles
+			const celW = Math.max(7, Math.round(cadres.w / 46));
+			const celH = Math.round(celW * 1.9);
+			const cols = Math.floor(cadres.w / celW);
+			const rangs = Math.floor(cadres.h / celH);
+			asciiFond = document.createElement('canvas');
+			asciiFond.width = cols * celW;
+			asciiFond.height = rangs * celH;
+			const cf = asciiFond.getContext('2d');
+			cf.font = `${(celW / 0.6).toFixed(1)}px "JetBrains Mono", ui-monospace, monospace`;
+			cf.textBaseline = 'top';
+			const jeu = '.:-=+*';
+			for (let r = 0; r < rangs; r++) {
+				for (let c = 0; c < cols; c++) {
+					if (Math.random() < 0.22) continue;
+					const ch = jeu[Math.floor(Math.random() * jeu.length)];
+					cf.fillStyle = `rgba(190,175,235,${(0.12 + Math.random() * 0.22).toFixed(3)})`;
+					cf.fillText(ch, c * celW, r * celH);
+				}
+			}
+
 			poussieres = Array.from({ length: L < 520 ? 16 : 30 }, () => ({
 				x: Math.random() * L,
 				y: Math.random() * H,
@@ -145,6 +218,13 @@
 			ctx.clearRect(0, 0, L, H);
 
 			const souffle = Math.sin(temps * 0.0004) * 2.2;
+			if (chemin && curseur.x > -999) {
+				// le test se fait sans transformation : le chemin est en pixels CSS
+				ctx.save();
+				ctx.setTransform(1, 0, 0, 1, 0, 0);
+				curseur.dans = ctx.isPointInPath(chemin, curseur.x, curseur.y);
+				ctx.restore();
+			}
 			const balayage = ((temps * 0.000055) % 1.25) - 0.12;
 
 			ctx.save();
@@ -176,51 +256,72 @@
 				ctx.fill();
 			}
 
-			// l'intérieur du profil : hachurage de scan
+			// l'intérieur de la silhouette
 			ctx.save();
 			ctx.clip(chemin);
 
+			// hachurage de scan, très effacé
 			const pas = Math.max(2.4, cadres.h / 170);
 			ctx.strokeStyle = lumiere;
-			ctx.lineWidth = 0.8;
+			ctx.globalAlpha = 0.35;
+			ctx.lineWidth = 0.7;
 			ctx.beginPath();
 			for (let y = cadres.y; y < cadres.y + cadres.h; y += pas) {
 				ctx.moveTo(cadres.x - 4, y);
 				ctx.lineTo(cadres.x + cadres.w + 4, y);
 			}
 			ctx.stroke();
+			ctx.globalAlpha = 1;
 
-			// trame de points
-			for (let y = cadres.y; y < cadres.y + cadres.h; y += pas * 3.2) {
-				for (let x = cadres.x; x < cadres.x + cadres.w; x += pas * 3.2) {
-					ctx.beginPath();
-					ctx.arc(x, y, 0.55, 0, Math.PI * 2);
-					ctx.fillStyle = 'rgba(123,61,255,.30)';
-					ctx.fill();
-				}
+			// tapisserie de caractères pâles
+			if (asciiFond) {
+				ctx.globalAlpha = 0.55;
+				ctx.drawImage(asciiFond, cadres.x, cadres.y, asciiFond.width, asciiFond.height);
+				ctx.globalAlpha = 1;
+			}
+
+			// logo Rif en ASCII, plus contrasté que la tapisserie
+			if (ascii) {
+				const ax = cadres.x + (cadres.w - ascii.width) / 2;
+				const ay = cadres.y + cadres.h * 0.66;
+				ctx.globalAlpha = 0.6 + Math.abs(balayage - 0.5) * 0.18;
+				ctx.drawImage(ascii, ax, ay);
+				ctx.globalAlpha = 1;
+			}
+
+			// lumière qui suit le curseur
+			if (curseur.dans && asciiFond) {
+				const r = Math.min(cadres.w, cadres.h) * 0.40;
+				const haloCurseur = ctx.createRadialGradient(curseur.x, curseur.y, 0, curseur.x, curseur.y, r);
+				haloCurseur.addColorStop(0, 'rgba(178,132,255,.62)');
+				haloCurseur.addColorStop(0.45, 'rgba(123,61,255,.26)');
+				haloCurseur.addColorStop(1, 'rgba(123,61,255,0)');
+				ctx.fillStyle = haloCurseur;
+				ctx.beginPath();
+				ctx.arc(curseur.x, curseur.y, r, 0, Math.PI * 2);
+				ctx.fill();
+
+				ctx.save();
+				ctx.beginPath();
+				ctx.arc(curseur.x, curseur.y, r * 0.8, 0, Math.PI * 2);
+				ctx.clip();
+				ctx.globalAlpha = 1;
+				ctx.drawImage(asciiFond, cadres.x, cadres.y, asciiFond.width, asciiFond.height);
+				if (ascii) ctx.drawImage(ascii, cadres.x + (cadres.w - ascii.width) / 2, cadres.y + cadres.h * 0.66);
+				ctx.globalAlpha = 1;
+				ctx.restore();
 			}
 
 			// bande de balayage
 			const yBalayage = cadres.y + balayage * cadres.h;
 			const gradBalayage = ctx.createLinearGradient(0, yBalayage - cadres.h * 0.06, 0, yBalayage + cadres.h * 0.06);
 			gradBalayage.addColorStop(0, 'rgba(123,61,255,0)');
-			gradBalayage.addColorStop(0.5, 'rgba(160,110,255,.22)');
+			gradBalayage.addColorStop(0.5, 'rgba(160,110,255,.16)');
 			gradBalayage.addColorStop(1, 'rgba(123,61,255,0)');
 			ctx.fillStyle = gradBalayage;
 			ctx.fillRect(cadres.x, yBalayage - cadres.h * 0.06, cadres.w, cadres.h * 0.12);
 
 			ctx.restore();
-
-			// contour : trois passes pour un léger halo
-			ctx.strokeStyle = 'rgba(123,61,255,.16)';
-			ctx.lineWidth = 4;
-			ctx.stroke(chemin);
-			ctx.strokeStyle = 'rgba(242,240,250,.30)';
-			ctx.lineWidth = 1.6;
-			ctx.stroke(chemin);
-			ctx.strokeStyle = 'rgba(255,255,255,.72)';
-			ctx.lineWidth = 0.7;
-			ctx.stroke(chemin);
 
 			ctx.restore();
 
@@ -239,11 +340,17 @@
 		requestAnimationFrame(dessiner);
 
 		window.addEventListener('resize', dimensionner);
+		if (document.fonts && document.fonts.ready) document.fonts.ready.then(dimensionner);
 
 		if (!sansSouris && !mouvementReduit) {
 			window.addEventListener('pointermove', (e) => {
 				decalageCible = ((e.clientX / window.innerWidth) - 0.5) * -14;
+				const rect = toile.getBoundingClientRect();
+				curseur.x = e.clientX - rect.left;
+				curseur.y = e.clientY - rect.top;
 			}, { passive: true });
+
+			window.addEventListener('pointerleave', () => { curseur.dans = false; });
 		}
 	}
 
@@ -448,7 +555,7 @@
 		let texte = '';
 
 		if (!etat || !etat.derniere) {
-			texte = 'première visite — je note l’heure';
+			texte = 'première visite, je note l’heure';
 			etat = { premiere: maintenant, derniere: maintenant, visites: 1 };
 		} else {
 			const jours = Math.floor((maintenant - etat.derniere) / 86400000);
@@ -456,11 +563,11 @@
 			etat.derniere = maintenant;
 			etat.visites = (etat.visites || 1) + 1;
 
-			if (heures < 1) texte = `visite n°${etat.visites} — il y a quelques minutes`;
-			else if (jours < 1) texte = `visite n°${etat.visites} — il y a ${heures} heure${heures > 1 ? 's' : ''}`;
-			else if (jours === 1) texte = `visite n°${etat.visites} — tu reviens après un jour`;
-			else if (jours < 60) texte = `visite n°${etat.visites} — tu reviens après ${jours} jours`;
-			else texte = `visite n°${etat.visites} — ça faisait longtemps`;
+			if (heures < 1) texte = `visite n°${etat.visites} · il y a quelques minutes`;
+			else if (jours < 1) texte = `visite n°${etat.visites} · il y a ${heures} heure${heures > 1 ? 's' : ''}`;
+			else if (jours === 1) texte = `visite n°${etat.visites} · tu reviens après un jour`;
+			else if (jours < 60) texte = `visite n°${etat.visites} · tu reviens après ${jours} jours`;
+			else texte = `visite n°${etat.visites} · ça faisait longtemps`;
 		}
 
 		memoire.textContent = texte;
