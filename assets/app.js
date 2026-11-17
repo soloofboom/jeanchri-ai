@@ -1,4 +1,4 @@
-/* dark.jeanchri.com : interactions
+/* ai.jeanchri.com : interactions
    Vanilla JS, aucune dépendance. Tout est neutralisé si prefers-reduced-motion. */
 
 (() => {
@@ -542,7 +542,7 @@
 	const memoire = document.getElementById('memoire');
 
 	if (memoire) {
-		const cle = 'dark.jeanchri.visite';
+		const cle = 'ai.jeanchri.visite';
 		const maintenant = Date.now();
 		let etat = null;
 
