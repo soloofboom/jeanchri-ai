@@ -218,7 +218,7 @@
 
 	/* ---------- 6. apparitions au scroll ---------- */
 
-	const cibles = document.querySelectorAll('.portes, .pied, .bandeau');
+	const cibles = document.querySelectorAll('.alibi, .portes, .pied, .bandeau');
 	cibles.forEach((el) => el.classList.add('monte'));
 
 	if ('IntersectionObserver' in window) {
