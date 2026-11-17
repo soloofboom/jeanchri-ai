@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>jeanChri — dark</title>
+<meta name="description" content="Version alternative et cinétique du site de jeanChri, artiste multi-disciplinaire.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#07070a">
+<link rel="icon" type="image/jpeg" href="images/site-icon.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css?v=1">
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+<div class="cursor" id="cursor" aria-hidden="true"><i></i></div>
+
+<div class="intro" id="intro" aria-hidden="true">
+	<div class="intro-mark">jeanChri</div>
+	<div class="intro-count"><span id="intro-count">00</span></div>
+	<div class="intro-line"></div>
+</div>
+
+<header class="bar">
+	<a class="mark" href="https://jeanchri.com/" data-hover>jeanChri</a>
+	<p class="bar-tag">dark <span>—</span> version alternative</p>
+	<a class="back" href="https://jeanchri.com/" data-hover>
+		<span>Retour au site</span>
+		<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+	</a>
+</header>
+
+<main>
+
+	<section class="hero">
+		<canvas id="field" aria-hidden="true"></canvas>
+
+		<p class="kicker"><span>01</span> Artiste multi-disciplinaire</p>
+
+		<h1 class="titre">
+			<span class="ligne"><em>idées</em> nées</span>
+			<span class="ligne">jamais de</span>
+			<span class="ligne creux">nulle part</span>
+		</h1>
+
+		<div class="hero-bas">
+			<p class="chapo">
+				Vous êtes sur la face sombre du site. Même œuvre,
+				autre lumière&nbsp;: images, musique et projets,
+				en mouvement.
+			</p>
+			<a class="defiler" href="#galerie" data-hover>
+				<span>Défiler</span>
+				<span class="defiler-trait" aria-hidden="true"></span>
+			</a>
+		</div>
+	</section>
+
+	<div class="bandeau" aria-hidden="true">
+		<div class="bandeau-piste">
+			<span>jeanChri<i>·</i>artiste multi-disciplinaire<i>·</i>idées nées jamais de nulle part<i>·</i></span>
+			<span>jeanChri<i>·</i>artiste multi-disciplinaire<i>·</i>idées nées jamais de nulle part<i>·</i></span>
+		</div>
+	</div>
+
+	<section class="galerie" id="galerie">
+		<div class="galerie-rail" id="rail">
+			<figure class="vue">
+				<div class="vue-img"><img src="images/creation.jpg" alt="Création" width="1600" height="1066"></div>
+				<figcaption><b>01</b> Création</figcaption>
+			</figure>
+			<figure class="vue">
+				<div class="vue-img"><img src="images/champis.jpg" alt="Champis" width="1600" height="1067" loading="lazy"></div>
+				<figcaption><b>02</b> Champis</figcaption>
+			</figure>
+			<figure class="vue">
+				<div class="vue-img"><img src="images/reve.jpg" alt="Rêve" width="1600" height="1067" loading="lazy"></div>
+				<figcaption><b>03</b> Rêve</figcaption>
+			</figure>
+			<figure class="vue">
+				<div class="vue-img"><img src="images/fleuve.jpg" alt="Fleuve" width="1600" height="1067" loading="lazy"></div>
+				<figcaption><b>04</b> Fleuve</figcaption>
+			</figure>
+			<figure class="vue">
+				<div class="vue-img"><img src="images/mais-lune.jpg" alt="Maïs Lune" width="1600" height="1067" loading="lazy"></div>
+				<figcaption><b>05</b> Maïs Lune</figcaption>
+			</figure>
+			<figure class="vue">
+				<div class="vue-img"><img src="images/nuages.jpg" alt="Nuages" width="1600" height="1067" loading="lazy"></div>
+				<figcaption><b>06</b> Nuages</figcaption>
+			</figure>
+			<figure class="vue">
+				<div class="vue-img"><img src="images/bateau.jpg" alt="Bateau" width="1600" height="1067" loading="lazy"></div>
+				<figcaption><b>07</b> Bateau</figcaption>
+			</figure>
+			<figure class="vue">
+				<div class="vue-img"><img src="images/feu.jpg" alt="Feu" width="1600" height="1067" loading="lazy"></div>
+				<figcaption><b>08</b> Feu</figcaption>
+			</figure>
+			<figure class="vue">
+				<div class="vue-img"><img src="images/vaisseau.jpg" alt="Vaisseau" width="1600" height="1067" loading="lazy"></div>
+				<figcaption><b>09</b> Vaisseau</figcaption>
+			</figure>
+			<div class="vue vue-fin">
+				<p>Fin de la<br>galerie</p>
+				<a href="https://jeanchri.com/portfolio/" data-hover>Portfolio complet <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
+			</div>
+		</div>
+	</section>
+
+	<section class="portes">
+		<p class="kicker"><span>02</span> Continuer</p>
+		<ul>
+			<li>
+				<a href="https://jeanchri.com/jeanchri-musique/" data-hover data-apercu="images/creation.jpg">
+					<span class="num">02.1</span>
+					<span class="nom">Musique</span>
+					<span class="flèche" aria-hidden="true">→</span>
+				</a>
+			</li>
+			<li>
+				<a href="https://jeanchri.com/aux-temps-possibles/" data-hover data-apercu="images/fleuve.jpg">
+					<span class="num">02.2</span>
+					<span class="nom">Aux temps <em>possibles</em></span>
+					<span class="flèche" aria-hidden="true">→</span>
+				</a>
+			</li>
+			<li>
+				<a href="https://jeanchri.com/" data-hover data-apercu="images/reve.jpg">
+					<span class="num">02.3</span>
+					<span class="nom">Le site <em>original</em></span>
+					<span class="flèche" aria-hidden="true">→</span>
+				</a>
+			</li>
+		</ul>
+	</section>
+
+</main>
+
+<footer class="pied">
+	<p>dark.jeanchri.com</p>
+	<p>© <span id="annee">2026</span> jeanChri — tous droits réservés</p>
+	<a href="https://jeanchri.com/" data-hover>jeanchri.com ↗</a>
+</footer>
+
+<div class="apercu" id="apercu" aria-hidden="true"><img alt="" src=""></div>
+
+<script src="assets/app.js?v=1"></script>
+</body>
+</html>
