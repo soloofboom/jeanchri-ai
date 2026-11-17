@@ -47,7 +47,7 @@
 
 	const barre = document.getElementById('progress-bar');
 
-	/* ---------- 3. portrait-miroir : une figure différente à chaque visite ---------- */
+	/* ---------- 3. portrait : profil gravé, hachuré comme un scan ---------- */
 
 	const toile = document.getElementById('portrait');
 
@@ -58,40 +58,45 @@
 		let L = 0;
 		let H = 0;
 		let centre = 0;
-		let lignes = [];
-		let points = [];
-		let parallaxe = 0;
-		let cibleParallaxe = 0;
+		let chemin = null;
+		let poussieres = [];
+		let lumiere = null;
+		let cadres = { x: 0, y: 0, w: 0, h: 0 };
+		let decalage = 0;
+		let decalageCible = 0;
 
-		const alea = (i) => {
-			const x = Math.sin(i * 12.9898 + graine) * 43758.5453;
-			return x - Math.floor(x);
-		};
+		// profil en coordonnées normalisées (0..1), face tournée vers la gauche
+		const profil = [
+			[0.500, 0.020], [0.408, 0.038], [0.348, 0.078], [0.318, 0.128],
+			[0.300, 0.172], [0.292, 0.198], [0.310, 0.222], [0.248, 0.262],
+			[0.286, 0.281], [0.276, 0.303], [0.296, 0.318], [0.281, 0.334],
+			[0.303, 0.360], [0.352, 0.383], [0.398, 0.412], [0.428, 0.446],
+			[0.424, 0.482], [0.386, 0.508], [0.330, 0.522], [0.250, 0.542],
+			[0.170, 0.572], [0.105, 0.618], [0.078, 0.700], [0.062, 0.830],
+			[0.056, 0.960], [0.052, 1.160], [0.500, 1.160], [0.948, 1.160],
+			[0.944, 0.960], [0.938, 0.830], [0.922, 0.700], [0.895, 0.618],
+			[0.830, 0.572], [0.750, 0.542], [0.690, 0.522], [0.638, 0.500],
+			[0.612, 0.452], [0.624, 0.400], [0.646, 0.320],
+			[0.656, 0.230], [0.642, 0.140], [0.596, 0.062], [0.548, 0.028]
+		];
 
-		// demi-largeur du buste, en fraction de la hauteur du canvas
-		const lisser = (a, b, x) => {
-			const v = clamp((x - a) / (b - a), 0, 1);
-			return v * v * (3 - 2 * v);
-		};
-
-		const profil = (t) => {
-			const cou = 0.076;
-
-			if (t <= 0.505) {
-				// tête : superellipse (crâne plat, mâchoire resserrée)
-				const u = t / 0.505;
-				const n = 2.7;
-				const base = Math.pow(Math.max(0, 1 - Math.pow(Math.abs(2 * u - 1), n)), 1 / n);
-				const machoire = 1 - 0.22 * lisser(0.6, 1, u);
-				// la mâchoire rejoint le cou sans former de pointe
-				return Math.max(0.172 * base * machoire, cou);
+		const courbe = (pts) => {
+			const p = new Path2D();
+			const n = pts.length;
+			p.moveTo(pts[0][0], pts[0][1]);
+			for (let i = 0; i < n; i++) {
+				const p0 = pts[(i - 1 + n) % n];
+				const p1 = pts[i];
+				const p2 = pts[(i + 1) % n];
+				const p3 = pts[(i + 2) % n];
+				p.bezierCurveTo(
+					p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6,
+					p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6,
+					p2[0], p2[1]
+				);
 			}
-
-			if (t <= 0.585) return cou;
-
-			// épaules : trapèzes qui se posent puis débordent du cadre
-			const s = (t - 0.585) / 0.415;
-			return cou + 0.24 * lisser(0, 0.62, s);
+			p.closePath();
+			return p;
 		};
 
 		const construire = () => {
@@ -104,36 +109,59 @@
 			ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 			centre = L * 0.5;
 
-			const nombre = L < 520 ? 74 : 128;
-			lignes = Array.from({ length: nombre }, (_, i) => ({
-				t: i / (nombre - 1),
-				bruit: alea(i),
-				phase: alea(i + 700) * Math.PI * 2,
-				accent: i % 11 === 0
-			}));
+			const hauteurFigure = H * 0.87;
+			const largeurFigure = Math.min(hauteurFigure * 0.86, L * 0.94);
+			cadres = {
+				w: largeurFigure,
+				h: hauteurFigure,
+				x: centre - largeurFigure / 2,
+				y: H * 0.05
+			};
 
-			if (mouvementReduit) {
-				points = [];
-			} else {
-				points = Array.from({ length: L < 520 ? 18 : 34 }, () => ({
-					x: Math.random() * L,
-					y: Math.random() * H,
-					vx: (Math.random() - 0.5) * 0.12,
-					vy: (Math.random() - 0.5) * 0.12,
-					r: Math.random() * 1.3 + 0.3
-				}));
-			}
+			chemin = courbe(profil.map(([px, py]) => [
+				cadres.x + px * cadres.w,
+				cadres.y + py * cadres.h
+			]));
+
+			lumiere = ctx.createLinearGradient(cadres.x, 0, cadres.x + cadres.w, 0);
+			lumiere.addColorStop(0.00, 'rgba(242,240,250,.02)');
+			lumiere.addColorStop(0.22, 'rgba(242,240,250,.24)');
+			lumiere.addColorStop(0.48, 'rgba(242,240,250,.19)');
+			lumiere.addColorStop(0.78, 'rgba(242,240,250,.10)');
+			lumiere.addColorStop(1.00, 'rgba(242,240,250,.02)');
+
+			poussieres = Array.from({ length: L < 520 ? 16 : 30 }, () => ({
+				x: Math.random() * L,
+				y: Math.random() * H,
+				vx: (Math.random() - 0.5) * 0.1,
+				vy: (Math.random() - 0.5) * 0.1,
+				r: Math.random() * 1.2 + 0.3
+			}));
 		};
 
 		const dessiner = (temps) => {
 			ctx.clearRect(0, 0, L, H);
 
-			const souffle = Math.sin(temps * 0.00042);
-			const haut = H * 0.1;
-			const hauteur = H * 0.84;
+			const souffle = Math.sin(temps * 0.0004) * 2.2;
+			const balayage = ((temps * 0.000055) % 1.25) - 0.12;
 
-			// atmosphère : poussières dérivantes
-			for (const p of points) {
+			ctx.save();
+			ctx.translate(decalage, souffle);
+
+			// halo
+			const hx = cadres.x + cadres.w * 0.5;
+			const hy = cadres.y + cadres.h * 0.28;
+			const halo = ctx.createRadialGradient(hx, hy, 0, hx, hy, cadres.h * 0.42);
+			halo.addColorStop(0, 'rgba(85,0,232,.13)');
+			halo.addColorStop(0.6, 'rgba(85,0,232,.035)');
+			halo.addColorStop(1, 'rgba(85,0,232,0)');
+			ctx.fillStyle = halo;
+			ctx.beginPath();
+			ctx.arc(hx, hy, cadres.h * 0.42, 0, Math.PI * 2);
+			ctx.fill();
+
+			// poussières
+			for (const p of poussieres) {
 				p.x += p.vx;
 				p.y += p.vy;
 				if (p.x < -10) p.x = L + 10;
@@ -142,64 +170,67 @@
 				if (p.y > H + 10) p.y = -10;
 				ctx.beginPath();
 				ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-				ctx.fillStyle = `rgba(242,240,250,${0.04 + p.r * 0.06})`;
+				ctx.fillStyle = `rgba(242,240,250,${0.04 + p.r * 0.05})`;
 				ctx.fill();
 			}
 
-			// la figure, ligne par ligne
-			for (const ligne of lignes) {
-				const y = haut + ligne.t * hauteur + souffle * 3;
-				const demi = profil(ligne.t) * H;
-				const largeur = demi * (0.95 + ligne.bruit * 0.08);
+			// l'intérieur du profil : hachurage de scan
+			ctx.save();
+			ctx.clip(chemin);
 
-				// bande de balayage qui traverse lentement le buste
-				const balayage = Math.exp(-Math.pow((ligne.t - ((temps * 0.00006) % 1.4) + 0.2) * 9, 2));
-				const base = 0.13 + balayage * 0.34 + (ligne.accent ? 0.12 : 0);
+			const pas = Math.max(2.4, cadres.h / 170);
+			ctx.strokeStyle = lumiere;
+			ctx.lineWidth = 0.8;
+			ctx.beginPath();
+			for (let y = cadres.y; y < cadres.y + cadres.h; y += pas) {
+				ctx.moveTo(cadres.x - 4, y);
+				ctx.lineTo(cadres.x + cadres.w + 4, y);
+			}
+			ctx.stroke();
 
-				ctx.beginPath();
-				for (let k = 0; k <= 26; k++) {
-					const p = (k / 26) * 2 - 1;
-					const x = centre + parallaxe + p * largeur;
-					const ondulation =
-						Math.sin(temps * 0.0007 + p * 2.4 + ligne.phase) * 1.3 +
-						Math.sin(p * 5.1 + ligne.phase * 2) * 0.9;
-					const yy = y + ondulation;
-					if (k === 0) ctx.moveTo(x, yy);
-					else ctx.lineTo(x, yy);
+			// trame de points
+			for (let y = cadres.y; y < cadres.y + cadres.h; y += pas * 3.2) {
+				for (let x = cadres.x; x < cadres.x + cadres.w; x += pas * 3.2) {
+					ctx.beginPath();
+					ctx.arc(x, y, 0.55, 0, Math.PI * 2);
+					ctx.fillStyle = 'rgba(123,61,255,.30)';
+					ctx.fill();
 				}
-				ctx.strokeStyle = ligne.accent
-					? `rgba(123,61,255,${base * 1.5})`
-					: `rgba(242,240,250,${base * 0.62})`;
-				ctx.lineWidth = ligne.accent ? 0.85 : 0.55;
-				ctx.stroke();
 			}
 
-			// contour : rend la figure immédiatement lisible
-			for (const cote of [-1, 1]) {
-				ctx.beginPath();
-				for (let i = 0; i < lignes.length; i++) {
-					const ligne = lignes[i];
-					const y = haut + ligne.t * hauteur + souffle * 3;
-					const largeur = profil(ligne.t) * H * (0.95 + ligne.bruit * 0.08);
-					const x = centre + parallaxe + cote * largeur;
-					if (i === 0) ctx.moveTo(x, y);
-					else ctx.lineTo(x, y);
-				}
-				ctx.strokeStyle = 'rgba(242,240,250,.34)';
-				ctx.lineWidth = 1;
-				ctx.stroke();
-			}
+			// bande de balayage
+			const yBalayage = cadres.y + balayage * cadres.h;
+			const gradBalayage = ctx.createLinearGradient(0, yBalayage - cadres.h * 0.06, 0, yBalayage + cadres.h * 0.06);
+			gradBalayage.addColorStop(0, 'rgba(123,61,255,0)');
+			gradBalayage.addColorStop(0.5, 'rgba(160,110,255,.22)');
+			gradBalayage.addColorStop(1, 'rgba(123,61,255,0)');
+			ctx.fillStyle = gradBalayage;
+			ctx.fillRect(cadres.x, yBalayage - cadres.h * 0.06, cadres.w, cadres.h * 0.12);
+
+			ctx.restore();
+
+			// contour : trois passes pour un léger halo
+			ctx.strokeStyle = 'rgba(123,61,255,.16)';
+			ctx.lineWidth = 4;
+			ctx.stroke(chemin);
+			ctx.strokeStyle = 'rgba(242,240,250,.30)';
+			ctx.lineWidth = 1.6;
+			ctx.stroke(chemin);
+			ctx.strokeStyle = 'rgba(255,255,255,.72)';
+			ctx.lineWidth = 0.7;
+			ctx.stroke(chemin);
+
+			ctx.restore();
 
 			if (!mouvementReduit) {
-				parallaxe = lerp(parallaxe, cibleParallaxe, 0.045);
+				decalage = decalage + (decalageCible - decalage) * 0.05;
 				requestAnimationFrame(dessiner);
 			}
 		};
 
 		const dimensionner = () => {
-			const ancienL = L;
 			construire();
-			if (ancienL !== L) parallaxe = 0;
+			decalage = 0;
 		};
 
 		dimensionner();
@@ -209,7 +240,7 @@
 
 		if (!sansSouris && !mouvementReduit) {
 			window.addEventListener('pointermove', (e) => {
-				cibleParallaxe = ((e.clientX / window.innerWidth) - 0.5) * -22;
+				decalageCible = ((e.clientX / window.innerWidth) - 0.5) * -14;
 			}, { passive: true });
 		}
 	}

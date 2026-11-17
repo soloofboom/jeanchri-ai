@@ -306,7 +306,7 @@ body.cursor-actif .cursor {
 @media (max-width: 900px) {
 	#portrait {
 		width: 100%;
-		opacity: .42;
+		opacity: .34;
 		mask-image: radial-gradient(80% 70% at 60% 40%, #000 20%, transparent 78%);
 		-webkit-mask-image: radial-gradient(80% 70% at 60% 40%, #000 20%, transparent 78%);
 	}
