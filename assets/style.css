@@ -336,37 +336,6 @@ body.cursor-actif .cursor {
 	55%, 100% { transform: translateX(100%); }
 }
 
-/* ---------- bandeau ---------- */
-
-.bandeau {
-	overflow: hidden;
-	border-top: 1px solid rgba(255, 255, 255, .08);
-	border-bottom: 1px solid rgba(255, 255, 255, .08);
-	padding: 18px 0;
-	background: var(--noir-2);
-}
-
-.bandeau-piste {
-	display: flex;
-	width: max-content;
-	animation: defile 34s linear infinite;
-}
-
-.bandeau-piste span {
-	font-family: var(--serif);
-	font-size: clamp(26px, 3.4vw, 46px);
-	letter-spacing: -.01em;
-	white-space: nowrap;
-	color: transparent;
-	-webkit-text-stroke: 1px rgba(242, 240, 250, .32);
-}
-
-.bandeau-piste i { color: var(--accent); -webkit-text-stroke: 0; padding: 0 .45em; }
-
-@keyframes defile {
-	to { transform: translateX(-50%); }
-}
-
 /* ---------- manifeste / alibi ---------- */
 
 .alibi {
@@ -772,7 +741,7 @@ body.cursor-actif .cursor {
 
 @media (prefers-reduced-motion: reduce) {
 	html { scroll-behavior: auto; }
-	.grain, .bandeau-piste, .defiler-trait::after { animation: none; }
+	.grain, .defiler-trait::after { animation: none; }
 	.ligne, .monte { opacity: 1; transform: none; transition: none; }
 	.intro { display: none; }
 	.cursor { display: none; }
