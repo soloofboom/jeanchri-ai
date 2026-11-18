@@ -178,6 +178,38 @@
 	color: var(--voile-2);
 }
 
+.rif-apres a {
+	border-bottom: 1px solid rgba(255, 255, 255, .18);
+	transition: border-color .3s, color .3s;
+}
+
+.rif-apres a:hover {
+	color: var(--accent);
+	border-color: var(--accent);
+}
+
+/* ---------- rifterm ---------- */
+
+.rif-term {
+	margin: clamp(24px, 4vh, 36px) 0 0;
+	padding: 18px 20px;
+	border-left: 2px solid var(--accent);
+	background: rgba(255, 255, 255, .03);
+	overflow-x: auto;
+	font-family: var(--mono);
+	font-size: 12px;
+	line-height: 1.9;
+	color: var(--voile);
+}
+
+.rif-term code {
+	font-size: inherit;
+	color: inherit;
+	background: none;
+	padding: 0;
+	border-radius: 0;
+}
+
 /* ---------- chiffres ---------- */
 
 .rif-chiffres {
