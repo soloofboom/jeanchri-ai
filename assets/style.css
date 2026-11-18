@@ -222,16 +222,26 @@ body.cursor-actif .cursor {
 	letter-spacing: -.01em;
 }
 
-.bar-tag {
+.nav {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: clamp(12px, 2vw, 22px);
 	font-family: var(--mono);
-	margin: 0;
 	font-size: 10px;
-	letter-spacing: .3em;
+	letter-spacing: .22em;
 	text-transform: uppercase;
-	color: var(--voile);
 }
 
-.bar-tag span { color: var(--accent); }
+.nav a {
+	color: var(--voile);
+	transition: color .25s;
+}
+
+.nav a:hover,
+.nav a[aria-current="page"] {
+	color: var(--accent);
+}
 
 .back {
 	justify-self: end;
@@ -837,13 +847,17 @@ body.cursor-actif .cursor {
 
 /* ---------- petits écrans ---------- */
 
+@media (max-width: 800px) {
+	.nav a.section { display: none; }
+}
+
 @media (max-width: 640px) {
 	.bar {
 		grid-template-columns: 1fr auto;
 		padding: 16px var(--marge);
 	}
-	.bar-tag { display: none; }
-	.back { font-size: 10px; letter-spacing: .16em; }
+	.nav a.section { display: none; }
+	.back { display: none; }
 	.back span { max-width: none; }
 	.mark { font-size: 21px; }
 
