@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RIF — Rapport d’Intelligence Financière · jeanChri</title>
+<title>RIF · Rapport d’Intelligence Financière · jeanChri</title>
 <meta name="description" content="RIF, la plateforme d’intelligence financière de jeanChri : bot Discord, API Flask, tableau de bord Vue 3 et moteur IA multi-sources. Étude de cas.">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#07070a">
@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/style.css?v=20">
+<link rel="stylesheet" href="../assets/style.css?v=21">
 <link rel="stylesheet" href="../assets/rif.css?v=3">
 </head>
 <body class="page-rif">
@@ -21,7 +21,7 @@
 <div class="cursor" id="cursor" aria-hidden="true"><i></i></div>
 
 <header class="bar">
-	<a class="mark" href="../" data-hover>jeanChri</a>
+	<a class="mark" href="/" data-hover>jeAnchrI</a>
 	<nav class="nav" aria-label="Navigation principale">
 		<a href="/">AI</a>
 		<span class="nav-sep" aria-hidden="true">·</span>
@@ -49,11 +49,11 @@
 
 		<div class="rif-accroche">
 			<h1 class="rif-titre">
-				<img src="../images/rif-lockup.svg" alt="RIF — Rapport d’Intelligence Financière" width="978" height="363">
+				<img src="../images/rif-lockup.svg" alt="RIF · Rapport d’Intelligence Financière" width="978" height="363">
 			</h1>
 			<p class="rif-chapo">
 				Un bot Discord devenu plateforme d’intelligence financière.
-				Vingt-deux sources, un moteur continu, quatre surfaces — et une
+				Vingt-deux sources, un moteur continu, quatre surfaces. Et une
 				seule personne derrière le clavier.
 			</p>
 		</div>
@@ -70,7 +70,7 @@
 			<h2 class="rif-h2">L’origine</h2>
 			<p class="rif-intro">
 				Au départ, un bot Discord. Il fallait produire des rapports de
-				marché réguliers — résumés, indices de chaleur, pépites — sans
+				marché réguliers (résumés, indices de chaleur, pépites) sans
 				les ressaisir à la main. RIF est né de cette contrainte&nbsp;:
 				un tuyau qui va des sources aux lecteurs, sans intervention.
 			</p>
@@ -130,17 +130,17 @@
 					<p class="rif-couche-nom">API</p>
 					<p>
 						Flask, cent quarante et une routes réparties en quinze
-						blueprints. Keycloak pour l’identité — OIDC, JWT validé par
-						JWKS, sessions HttpOnly —, Stripe pour les paliers, alertes
+						blueprints. Keycloak pour l’identité (OIDC, JWT validé par
+						JWKS, sessions HttpOnly), Stripe pour les paliers, alertes
 						évaluées toutes les cinq minutes.
 					</p>
 				</li>
 				<li>
 					<p class="rif-couche-nom">Surfaces</p>
 					<p>
-						Le bot Discord, le tableau de bord Vue 3 — vingt-sept pages
+						Le bot Discord, le tableau de bord Vue 3 (vingt-sept pages
 						applicatives, dix-neuf pages de documentation, cent
-						cinquante composants —, le CLI rifterm, les infolettres
+						cinquante composants), le CLI rifterm, les infolettres
 						Brevo et les courriels Resend, un webhook Bearer pour n8n
 						et les raccourcis iOS.
 					</p>
@@ -148,8 +148,8 @@
 			</ol>
 
 			<p class="rif-apres">
-				Dix workflows CI — tests, déploiement, audit de sécurité, veille
-				des sources — surveillent le dépôt.
+				Dix workflows CI (tests, déploiement, audit de sécurité, veille
+				des sources) surveillent le dépôt.
 			</p>
 		</div>
 	</section>
@@ -159,8 +159,8 @@
 		<div class="rif-corps">
 			<h2 class="rif-h2">rifterm</h2>
 			<p class="rif-intro">
-				La même intelligence de marché, sans quitter le terminal — et
-				la seule partie du projet dont le code est public.
+				La même intelligence de marché, sans quitter le terminal. Et la
+				seule partie du projet dont le code est public.
 			</p>
 			<p>
 				rifterm est le client en ligne de commande de RIF. Il ne calcule
@@ -168,15 +168,15 @@
 				tableau de bord, et rend le HEAT INDEX, les pépites et les
 				rapports en tableau lisible, en JSON ou en fichier. Le CLI est
 				gratuit&nbsp;; les données s’ouvrent avec une clé PRO+, la même
-				que pour l’API — un cache local de cinq minutes épargne le
+				que pour l’API&nbsp;; un cache local de cinq minutes épargne le
 				quota.
 			</p>
 			<p>
 				Il expose aussi ces données à des agents IA par un serveur
 				MCP&nbsp;: Claude, Codex, Cursor ou Zed lisent le marché avec
 				leur propre modèle. Aucun LLM n’est embarqué, aucune clé tierce
-				n’est stockée — le serveur tourne sur votre machine et réutilise
-				la clé du CLI.
+				n’est stockée&nbsp;: le serveur tourne sur votre machine et
+				réutilise la clé du CLI.
 			</p>
 			<pre class="rif-term"><code>pipx install rifterm
 
@@ -185,7 +185,7 @@ rifterm pepites --days 3   # pépites récentes
 rifterm report --json      # export pour un script
 rifterm mcp                # serveur MCP pour un agent</code></pre>
 			<p class="rif-apres">
-				Open source, licence MIT, Python — v0.3.
+				Open source, licence MIT, Python, v0.3.
 				<a href="https://pypi.org/project/rifterm/" target="_blank" rel="noopener" data-hover>PyPI</a>
 				· <a href="https://github.com/soloofboom/rifterm" target="_blank" rel="noopener" data-hover>GitHub</a>
 				· <a href="https://lerif.ca/rifterm" target="_blank" rel="noopener" data-hover>documentation</a>
