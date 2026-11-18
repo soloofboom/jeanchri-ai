@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/style.css?v=15">
-<link rel="stylesheet" href="../assets/rif.css?v=1">
+<link rel="stylesheet" href="../assets/rif.css?v=2">
 </head>
 <body class="page-rif">
 
@@ -32,8 +32,7 @@
 <main>
 
 	<section class="rif-hero">
-		<canvas id="rif-logo" width="900" height="360" aria-hidden="true"></canvas>
-		<p class="rif-legende">La grenouille, dessinée en caractères.</p>
+		<canvas id="rif-logo" width="900" height="500" aria-hidden="true"></canvas>
 
 		<div class="rif-accroche">
 			<h1 class="rif-titre">
@@ -99,15 +98,16 @@
 						Un ordonnanceur continu à trois cadences&nbsp;: Pulse
 						toutes les deux minutes, Heartbeat toutes les vingt, Deep
 						Scan toutes les heures, avec jitter et arrêt gracieux. Il
-						alimente le HEAT INDEX et les scores de conviction. Les
-						agents IA résument l’actualité par ticker et rédigent les
-						infolettres.
+						alimente le HEAT INDEX et les scores de conviction&nbsp;;
+						l’Algo Mixer laisse composer ses propres formules, avec
+						backtest. Les agents IA résument l’actualité par ticker et
+						rédigent les infolettres.
 					</p>
 				</li>
 				<li>
 					<p class="rif-couche-nom">Données</p>
 					<p>
-						PostgreSQL, cinquante et une tables, isolation par
+						PostgreSQL, quarante-six tables et vues, isolation par
 						locataire. Redis pour le cache. Une Ticker Bank suit cinq
 						cents valeurs en hot, warm et cold.
 					</p>
@@ -115,21 +115,28 @@
 				<li>
 					<p class="rif-couche-nom">API</p>
 					<p>
-						Flask, plus de cent trente routes sous <code>/api/v1</code>.
-						Keycloak pour l’identité — OIDC, JWT validé par JWKS,
-						sessions HttpOnly —, Stripe pour les paliers, alertes
+						Flask, quatre-vingt-huit routes réparties en seize
+						blueprints. Keycloak pour l’identité — OIDC, JWT validé par
+						JWKS, sessions HttpOnly —, Stripe pour les paliers, alertes
 						évaluées toutes les cinq minutes.
 					</p>
 				</li>
 				<li>
 					<p class="rif-couche-nom">Surfaces</p>
 					<p>
-						Le bot Discord, le tableau de bord Vue 3, les infolettres
-						Brevo et les courriels Resend, un webhook Bearer pour n8n
-						et les raccourcis iOS.
+						Le bot Discord, le tableau de bord Vue 3 — vingt-sept pages
+						applicatives, dix-neuf pages de documentation, cent
+						cinquante composants —, les infolettres Brevo et les
+						courriels Resend, un webhook Bearer pour n8n et les
+						raccourcis iOS.
 					</p>
 				</li>
 			</ol>
+
+			<p class="rif-apres">
+				Onze workflows CI — tests, déploiement, audit de sécurité, veille
+				des sources — surveillent le dépôt.
+			</p>
 		</div>
 	</section>
 
@@ -143,10 +150,13 @@
 
 			<dl class="rif-chiffres">
 				<div><dt>sources de données</dt><dd>22</dd></div>
-				<div><dt>routes API</dt><dd>130<span>+</span></dd></div>
-				<div><dt>tables PostgreSQL</dt><dd>51</dd></div>
+				<div><dt>subreddits suivis</dt><dd>42</dd></div>
+				<div><dt>routes HTTP</dt><dd>88</dd></div>
+				<div><dt>tables et vues</dt><dd>46</dd></div>
+				<div><dt>migrations</dt><dd>55</dd></div>
 				<div><dt>composants Vue</dt><dd>150</dd></div>
-				<div><dt>pages applicatives</dt><dd>27</dd></div>
+				<div><dt>pages applicatives et docs</dt><dd>46</dd></div>
+				<div><dt>tests automatisés</dt><dd>4&nbsp;170</dd></div>
 				<div><dt>tickers suivis</dt><dd>500</dd></div>
 			</dl>
 		</div>
@@ -172,6 +182,6 @@
 	<a href="https://jeanchri.com/" data-hover>jeanchri.com ↗</a>
 </footer>
 
-<script src="../assets/rif.js?v=1"></script>
+<script src="../assets/rif.js?v=2"></script>
 </body>
 </html>

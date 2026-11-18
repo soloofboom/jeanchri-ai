@@ -72,6 +72,7 @@
 	let debut = 0;
 	let dernier = 0;
 	let source = null;
+	let ligneEau = 0;
 
 	const curseurCanvas = { x: -9999, y: -9999, actif: false };
 
@@ -80,7 +81,7 @@
 		const c = document.createElement('canvas');
 		c.width = grenouille.naturalWidth;
 		c.height = grenouille.naturalHeight;
-		const cx = c.getContext('2d');
+		const cx = c.getContext('2d', { willReadFrequently: true });
 		cx.drawImage(grenouille, 0, 0);
 
 		const d = cx.getImageData(0, 0, c.width, c.height).data;
@@ -128,18 +129,20 @@
 		const echantillon = document.createElement('canvas');
 		echantillon.width = cols;
 		echantillon.height = rows;
-		const ex = echantillon.getContext('2d');
+		const ex = echantillon.getContext('2d', { willReadFrequently: true });
 		ex.drawImage(grenouille, source.x, source.y, source.w, source.h, 0, 0, cols, rows);
 		const px = ex.getImageData(0, 0, cols, rows).data;
 
-		const cellH = Math.min(H / rows, (L / cols) * 2);
+		const zone = H * 0.74;
+		const cellH = Math.min(zone / rows, (L / cols) * 2);
 		const cellW = cellH / 2;
 		cadres = {
 			x: (L - cols * cellW) / 2,
-			y: (H - rows * cellH) / 2,
+			y: (zone - rows * cellH) / 2,
 			w: cols * cellW,
 			h: rows * cellH
 		};
+		ligneEau = cadres.y + cadres.h;
 
 		ctx.font = `${(cellW / 0.6).toFixed(2)}px "JetBrains Mono", ui-monospace, monospace`;
 		ctx.textBaseline = 'top';
@@ -159,7 +162,8 @@
 					x: cadres.x + c * cellW,
 					y: cadres.y + r * cellH,
 					a: 0.46 + densite * 0.06,
-					seuil: (r + c * 0.4) / denominateur
+					seuil: (r + c * 0.4) / denominateur,
+					reflet: (r + c) % 2 === 0
 				});
 			}
 		}
@@ -209,6 +213,47 @@
 
 			ctx.fillStyle = `rgba(${teinte},${a.toFixed(3)})`;
 			ctx.fillText(cel.ch, cel.x, cel.y);
+		}
+
+		// reflet d'eau
+		const t = mouvementReduit ? 0 : temps;
+		const profondeur = cadres.h * 0.55;
+		const bas = ligneEau;
+
+		ctx.save();
+		ctx.beginPath();
+		ctx.rect(0, bas, L, Math.max(0, H - bas + 30));
+		ctx.clip();
+
+		for (const cel of cellules) {
+			if (!cel.reflet) continue;
+			const distance = bas - cel.y;
+			if (distance < 0 || distance > profondeur) continue;
+			const avance = mouvementReduit ? 1 : clamp((temps - debut - cel.seuil * 900) / 280, 0, 1);
+			if (avance <= 0) continue;
+			const fade = 1 - distance / profondeur;
+			const onde = Math.sin(t * 0.0016 + distance * 0.11 + cel.x * 0.01) * (1.2 + distance * 0.02);
+			ctx.fillStyle = `rgba(170,135,245,${(cel.a * avance * intensite * 0.45 * fade).toFixed(3)})`;
+			ctx.fillText(cel.ch, cel.x + onde, bas + distance * 0.58);
+		}
+
+		ctx.restore();
+
+		// ligne d'eau
+		const ligne = ctx.createLinearGradient(cadres.x, 0, cadres.x + cadres.w, 0);
+		ligne.addColorStop(0, 'rgba(123,61,255,0)');
+		ligne.addColorStop(0.5, `rgba(190,155,255,${(0.26 + 0.08 * Math.sin(t * 0.002)).toFixed(3)})`);
+		ligne.addColorStop(1, 'rgba(123,61,255,0)');
+		ctx.fillStyle = ligne;
+		ctx.fillRect(cadres.x, bas - 0.5, cadres.w, 1);
+
+		// ondulations
+		for (let i = 0; i < 2; i++) {
+			const p = ((t * 0.00006 + i * 0.5) % 1);
+			const y = bas + 6 + p * Math.max(0, H - bas - 12);
+			const largeur = cadres.w * (0.3 + p * 0.55);
+			ctx.fillStyle = `rgba(170,135,245,${(0.16 * (1 - p)).toFixed(3)})`;
+			ctx.fillRect(centreX - largeur / 2, y, largeur, 1);
 		}
 
 		ctx.restore();

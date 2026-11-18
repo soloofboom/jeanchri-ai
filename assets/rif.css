@@ -20,16 +20,7 @@
 #rif-logo {
 	display: block;
 	width: min(100%, 880px);
-	height: clamp(240px, 48vh, 460px);
-}
-
-.rif-legende {
-	margin: 0;
-	font-family: var(--mono);
-	font-size: 9px;
-	letter-spacing: .2em;
-	text-transform: uppercase;
-	color: var(--voile-2);
+	height: clamp(260px, 54vh, 500px);
 }
 
 .rif-accroche {
@@ -177,6 +168,16 @@
 	color: var(--voile);
 }
 
+.rif-apres {
+	margin: clamp(22px, 4vh, 34px) 0 0;
+	max-width: 60ch;
+	font-family: var(--mono);
+	font-size: 10px;
+	letter-spacing: .1em;
+	line-height: 1.9;
+	color: var(--voile-2);
+}
+
 /* ---------- chiffres ---------- */
 
 .rif-chiffres {
@@ -269,7 +270,6 @@
 
 /* ---------- entrée en scène ---------- */
 
-.rif-legende,
 .rif-accroche,
 .rif-defiler {
 	opacity: 0;
@@ -277,7 +277,6 @@
 	animation: rif-monte .9s cubic-bezier(.2, .8, .2, 1) forwards;
 }
 
-.rif-legende { animation-delay: .35s; }
 .rif-accroche { animation-delay: .45s; }
 .rif-defiler { animation-delay: .7s; }
 
@@ -310,7 +309,7 @@
 }
 
 @media (max-width: 640px) {
-	#rif-logo { height: clamp(200px, 34vh, 300px); }
+	#rif-logo { height: clamp(220px, 40vh, 340px); }
 
 	.rif-chiffres { grid-template-columns: repeat(2, 1fr); }
 
@@ -336,7 +335,6 @@
 /* ---------- mouvement réduit ---------- */
 
 @media (prefers-reduced-motion: reduce) {
-	.rif-legende,
 	.rif-accroche,
 	.rif-defiler {
 		opacity: 1;
