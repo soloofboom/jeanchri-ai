@@ -97,17 +97,18 @@
 					<p>
 						Un ordonnanceur continu à trois cadences&nbsp;: Pulse
 						toutes les deux minutes, Heartbeat toutes les vingt, Deep
-						Scan toutes les heures, avec jitter et arrêt gracieux. Il
-						alimente le HEAT INDEX et les scores de conviction&nbsp;;
-						l’Algo Mixer laisse composer ses propres formules, avec
-						backtest. Les agents IA résument l’actualité par ticker et
+						Scan toutes les heures, avec jitter et arrêt gracieux.
+						Environ quarante-cinq mille signaux en sortent chaque jour,
+						qui alimentent le HEAT INDEX et les scores de
+						conviction&nbsp;; l’Algo Mixer laisse composer ses propres
+						formules, avec backtest. Les agents IA résument l’actualité par ticker et
 						rédigent les infolettres.
 					</p>
 				</li>
 				<li>
 					<p class="rif-couche-nom">Données</p>
 					<p>
-						PostgreSQL, quarante-six tables et vues, isolation par
+						PostgreSQL, cinquante-deux tables et vues, isolation par
 						locataire. Redis pour le cache. Une Ticker Bank suit cinq
 						cents valeurs en hot, warm et cold.
 					</p>
@@ -115,7 +116,7 @@
 				<li>
 					<p class="rif-couche-nom">API</p>
 					<p>
-						Flask, quatre-vingt-huit routes réparties en seize
+						Flask, cent quarante et une routes réparties en quinze
 						blueprints. Keycloak pour l’identité — OIDC, JWT validé par
 						JWKS, sessions HttpOnly —, Stripe pour les paliers, alertes
 						évaluées toutes les cinq minutes.
@@ -134,7 +135,7 @@
 			</ol>
 
 			<p class="rif-apres">
-				Onze workflows CI — tests, déploiement, audit de sécurité, veille
+				Dix workflows CI — tests, déploiement, audit de sécurité, veille
 				des sources — surveillent le dépôt.
 			</p>
 		</div>
@@ -145,19 +146,23 @@
 		<div class="rif-corps">
 			<h2 class="rif-h2">Les chiffres</h2>
 			<p class="rif-intro">
-				Relevés dans le dépôt, à la date de cette page.
+				Relevés dans le dépôt le 18 novembre 2026&nbsp;; les volumes
+				quotidiens sont calculés sur la cadence du moteur.
 			</p>
 
 			<dl class="rif-chiffres">
 				<div><dt>sources de données</dt><dd>22</dd></div>
 				<div><dt>subreddits suivis</dt><dd>42</dd></div>
-				<div><dt>routes HTTP</dt><dd>88</dd></div>
-				<div><dt>tables et vues</dt><dd>46</dd></div>
+				<div><dt>signaux par jour</dt><dd>45&nbsp;000</dd></div>
+				<div><dt>routes HTTP</dt><dd>141</dd></div>
+				<div><dt>tables et vues</dt><dd>52</dd></div>
 				<div><dt>migrations</dt><dd>55</dd></div>
 				<div><dt>composants Vue</dt><dd>150</dd></div>
 				<div><dt>pages applicatives et docs</dt><dd>46</dd></div>
-				<div><dt>tests automatisés</dt><dd>4&nbsp;170</dd></div>
+				<div><dt>tests automatisés</dt><dd>5&nbsp;009</dd></div>
 				<div><dt>tickers suivis</dt><dd>500</dd></div>
+				<div><dt>commits</dt><dd>2&nbsp;984</dd></div>
+				<div><dt>lignes de code</dt><dd>201&nbsp;882</dd></div>
 			</dl>
 		</div>
 	</section>
