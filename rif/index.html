@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIF — Rapport d’Intelligence Financière · jeanChri</title>
+<meta name="description" content="RIF, la plateforme d’intelligence financière de jeanChri : bot Discord, API Flask, tableau de bord Vue 3 et moteur IA multi-sources. Étude de cas.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#07070a">
+<link rel="icon" type="image/jpeg" href="../images/site-icon.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css?v=15">
+<link rel="stylesheet" href="../assets/rif.css?v=1">
+</head>
+<body class="page-rif">
+
+<div class="grain" aria-hidden="true"></div>
+<div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+<div class="cursor" id="cursor" aria-hidden="true"><i></i></div>
+
+<header class="bar">
+	<a class="mark" href="../" data-hover>jeanChri</a>
+	<p class="bar-tag">RIF <span>·</span> Rapport d’Intelligence Financière</p>
+	<a class="back" href="../" data-hover>
+		<span>Retour à ai</span>
+		<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+	</a>
+</header>
+
+<main>
+
+	<section class="rif-hero">
+		<canvas id="rif-logo" width="900" height="360" aria-hidden="true"></canvas>
+		<p class="rif-legende">La grenouille, dessinée en caractères.</p>
+
+		<div class="rif-accroche">
+			<h1 class="rif-titre">
+				<img src="../images/rif-lockup.svg" alt="RIF — Rapport d’Intelligence Financière" width="978" height="363">
+			</h1>
+			<p class="rif-chapo">
+				Un bot Discord devenu plateforme d’intelligence financière.
+				Vingt-deux sources, un moteur continu, trois surfaces — et une
+				seule personne derrière le clavier.
+			</p>
+		</div>
+
+		<a class="rif-defiler" href="#origine" data-hover>
+			<span>Lire</span>
+			<span class="rif-trait" aria-hidden="true"></span>
+		</a>
+	</section>
+
+	<section class="rif-section" id="origine">
+		<p class="rif-num">01</p>
+		<div class="rif-corps">
+			<h2 class="rif-h2">L’origine</h2>
+			<p class="rif-intro">
+				Au départ, un bot Discord. Il fallait produire des rapports de
+				marché réguliers — résumés, indices de chaleur, pépites — sans
+				les ressaisir à la main. RIF est né de cette contrainte&nbsp;:
+				un tuyau qui va des sources aux lecteurs, sans intervention.
+			</p>
+			<p>
+				Puis le tuyau a grossi. Aux rapports se sont ajoutés la
+				surveillance continue, les alertes, les infolettres, un tableau
+				de bord, des comptes, des paliers. Ce qui était un script est
+				devenu une plateforme avec un moteur, une API et trois surfaces.
+			</p>
+			<p>
+				L’intention, elle, n’a pas bougé&nbsp;: lire beaucoup, trier
+				vite, écrire court. La grenouille est restée.
+			</p>
+		</div>
+	</section>
+
+	<section class="rif-section" id="architecture">
+		<p class="rif-num">02</p>
+		<div class="rif-corps">
+			<h2 class="rif-h2">L’architecture</h2>
+			<p class="rif-intro">
+				Cinq couches, dans l’ordre où la donnée les traverse.
+			</p>
+
+			<ol class="rif-couches">
+				<li>
+					<p class="rif-couche-nom">Sources</p>
+					<p>
+						Vingt-deux sources, des quarante-deux subreddits suivis à
+						SEC EDGAR, FRED, Binance, Polymarket et les flux RSS.
+						Barchart et TradingView passent par un collecteur derrière
+						VPN, avec disjoncteur automatique.
+					</p>
+				</li>
+				<li>
+					<p class="rif-couche-nom">Moteur</p>
+					<p>
+						Un ordonnanceur continu à trois cadences&nbsp;: Pulse
+						toutes les deux minutes, Heartbeat toutes les vingt, Deep
+						Scan toutes les heures, avec jitter et arrêt gracieux. Il
+						alimente le HEAT INDEX et les scores de conviction. Les
+						agents IA résument l’actualité par ticker et rédigent les
+						infolettres.
+					</p>
+				</li>
+				<li>
+					<p class="rif-couche-nom">Données</p>
+					<p>
+						PostgreSQL, cinquante et une tables, isolation par
+						locataire. Redis pour le cache. Une Ticker Bank suit cinq
+						cents valeurs en hot, warm et cold.
+					</p>
+				</li>
+				<li>
+					<p class="rif-couche-nom">API</p>
+					<p>
+						Flask, plus de cent trente routes sous <code>/api/v1</code>.
+						Keycloak pour l’identité — OIDC, JWT validé par JWKS,
+						sessions HttpOnly —, Stripe pour les paliers, alertes
+						évaluées toutes les cinq minutes.
+					</p>
+				</li>
+				<li>
+					<p class="rif-couche-nom">Surfaces</p>
+					<p>
+						Le bot Discord, le tableau de bord Vue 3, les infolettres
+						Brevo et les courriels Resend, un webhook Bearer pour n8n
+						et les raccourcis iOS.
+					</p>
+				</li>
+			</ol>
+		</div>
+	</section>
+
+	<section class="rif-section" id="chiffres">
+		<p class="rif-num">03</p>
+		<div class="rif-corps">
+			<h2 class="rif-h2">Les chiffres</h2>
+			<p class="rif-intro">
+				Relevés dans le dépôt, à la date de cette page.
+			</p>
+
+			<dl class="rif-chiffres">
+				<div><dt>sources de données</dt><dd>22</dd></div>
+				<div><dt>routes API</dt><dd>130<span>+</span></dd></div>
+				<div><dt>tables PostgreSQL</dt><dd>51</dd></div>
+				<div><dt>composants Vue</dt><dd>150</dd></div>
+				<div><dt>pages applicatives</dt><dd>27</dd></div>
+				<div><dt>tickers suivis</dt><dd>500</dd></div>
+			</dl>
+		</div>
+	</section>
+
+	<section class="rif-fin">
+		<p>
+			RIF tourne en production sur
+			<a href="https://lerif.ca/" target="_blank" rel="noopener" data-hover>lerif.ca</a>.
+		</p>
+		<p class="rif-fin-liens">
+			<a href="../" data-hover>ai.jeanchri.com</a>
+			<a href="https://jeanchri.com/" data-hover>jeanchri.com</a>
+		</p>
+	</section>
+
+</main>
+
+<footer class="pied">
+	<p>ai.jeanchri.com · rif</p>
+	<p class="colophon">Écriture&nbsp;: <b>ai</b>, intelligence artificielle · Plateforme&nbsp;: jeanChri</p>
+	<p>© <span id="annee">2026</span> jeanChri · tous droits réservés</p>
+	<a href="https://jeanchri.com/" data-hover>jeanchri.com ↗</a>
+</footer>
+
+<script src="../assets/rif.js?v=1"></script>
+</body>
+</html>
