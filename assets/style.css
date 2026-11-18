@@ -232,7 +232,7 @@ body.cursor-actif .cursor {
 	transition: color .25s;
 }
 
-.nav > a:first-child {
+.nav-nom {
 	text-transform: none;
 	letter-spacing: .04em;
 }
