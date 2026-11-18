@@ -47,22 +47,18 @@
 
 	const barre = document.getElementById('progress-bar');
 
-	/* ---------- 3. portrait : profil gravé, hachuré comme un scan ---------- */
+	/* ---------- 3. pluie de caractères à droite du hero ---------- */
 
 	const toile = document.getElementById('portrait');
 
 	if (toile) {
 		const ctx = toile.getContext('2d');
-		const graine = Math.random() * 100000;
 		const JEU = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*+=<>/\\|_-.:;!?[]{}()^~";
 		const caractere = () => JEU[Math.floor(Math.random() * JEU.length)];
 
 		let L = 0;
 		let H = 0;
-		let centre = 0;
-		let chemin = null;
 		let poussieres = [];
-		let lumiere = null;
 		let asciiFond = null;
 		let asciiCtx = null;
 		let cases = [];
@@ -78,44 +74,6 @@
 		let decalage = 0;
 		let decalageCible = 0;
 
-		// buste en coordonnées normalisées (0..1) : crâne arrondi, mâchoire
-		// resserrée, nuque étroite puis épaules. La gauche est un miroir.
-		const demi = [
-			[0.500, 0.022], [0.534, 0.024], [0.568, 0.030], [0.600, 0.042],
-			[0.630, 0.060], [0.656, 0.086], [0.676, 0.118], [0.690, 0.154],
-			[0.698, 0.192], [0.700, 0.230], [0.694, 0.266], [0.683, 0.298],
-			[0.668, 0.326], [0.650, 0.350], [0.630, 0.371], [0.612, 0.389],
-			[0.598, 0.406], [0.588, 0.424], [0.583, 0.442],
-			[0.584, 0.461], [0.588, 0.483], [0.591, 0.505],
-			[0.600, 0.527], [0.620, 0.545], [0.651, 0.559],
-			[0.698, 0.573], [0.750, 0.592], [0.800, 0.620],
-			[0.845, 0.658], [0.880, 0.708], [0.907, 0.772],
-			[0.926, 0.850], [0.938, 0.946], [0.946, 1.100]
-		];
-
-		const profil = demi.concat(
-			demi.slice(0, -1).reverse().map(([x, y]) => [1 - x, y])
-		);
-
-		const courbe = (pts) => {
-			const p = new Path2D();
-			const n = pts.length;
-			p.moveTo(pts[0][0], pts[0][1]);
-			for (let i = 0; i < n; i++) {
-				const p0 = pts[(i - 1 + n) % n];
-				const p1 = pts[i];
-				const p2 = pts[(i + 1) % n];
-				const p3 = pts[(i + 2) % n];
-				p.bezierCurveTo(
-					p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6,
-					p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6,
-					p2[0], p2[1]
-				);
-			}
-			p.closePath();
-			return p;
-		};
-
 		const construire = () => {
 			const dpr = Math.min(window.devicePixelRatio || 1, 2);
 			const rect = toile.getBoundingClientRect();
@@ -124,31 +82,10 @@
 			toile.width = Math.round(L * dpr);
 			toile.height = Math.round(H * dpr);
 			ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-			centre = L * 0.5;
-
-			const hauteurFigure = H * 0.87;
-			const largeurFigure = Math.min(hauteurFigure * 0.63, L * 0.94);
-			cadres = {
-				w: largeurFigure,
-				h: hauteurFigure,
-				x: centre - largeurFigure / 2,
-				y: H * 0.05
-			};
-
-			chemin = courbe(profil.map(([px, py]) => [
-				cadres.x + px * cadres.w,
-				cadres.y + py * cadres.h
-			]));
-
-			lumiere = ctx.createLinearGradient(cadres.x, 0, cadres.x + cadres.w, 0);
-			lumiere.addColorStop(0.00, 'rgba(242,240,250,.02)');
-			lumiere.addColorStop(0.22, 'rgba(242,240,250,.24)');
-			lumiere.addColorStop(0.48, 'rgba(242,240,250,.19)');
-			lumiere.addColorStop(0.78, 'rgba(242,240,250,.10)');
-			lumiere.addColorStop(1.00, 'rgba(242,240,250,.02)');
+			cadres = { x: 0, y: 0, w: L, h: H };
 
 			// pluie de caractères : grille de colonnes, tête lumineuse + traînée
-			celW = Math.max(8, Math.round(cadres.w / 42));
+			celW = Math.max(8, Math.round(cadres.w / 64));
 			celH = Math.round(celW * 1.85);
 			cols = Math.max(1, Math.floor(cadres.w / celW));
 			rangs = Math.max(1, Math.floor(cadres.h / celH));
@@ -241,15 +178,10 @@
 			ctx.clearRect(0, 0, L, H);
 
 			const souffle = Math.sin(temps * 0.0004) * 2.2;
-			if (chemin && curseur.x > -999) {
-				// le test se fait sans transformation : le chemin est en pixels CSS
-				ctx.save();
-				ctx.setTransform(1, 0, 0, 1, 0, 0);
-				curseur.dans = ctx.isPointInPath(chemin, curseur.x, curseur.y);
-				ctx.restore();
-			}
+			curseur.dans =
+				curseur.x > -9999 && curseur.x >= 0 && curseur.x <= L && curseur.y >= 0 && curseur.y <= H;
 			const balayage = ((temps * 0.000055) % 1.25) - 0.12;
-			const rayonEclat = Math.min(cadres.w, cadres.h) * 0.34;
+			const rayonEclat = Math.min(cadres.w, cadres.h) * 0.26;
 
 			dessinerPluie(
 				dt,
@@ -291,23 +223,6 @@
 				ctx.fill();
 			}
 
-			// l'intérieur de la silhouette
-			ctx.save();
-			ctx.clip(chemin);
-
-			// hachurage de scan, très effacé
-			const pas = Math.max(2.4, cadres.h / 170);
-			ctx.strokeStyle = lumiere;
-			ctx.globalAlpha = 0.18;
-			ctx.lineWidth = 0.7;
-			ctx.beginPath();
-			for (let y = cadres.y; y < cadres.y + cadres.h; y += pas) {
-				ctx.moveTo(cadres.x - 4, y);
-				ctx.lineTo(cadres.x + cadres.w + 4, y);
-			}
-			ctx.stroke();
-			ctx.globalAlpha = 1;
-
 			// la pluie mauve
 			if (asciiFond) {
 				ctx.globalAlpha = 0.8;
@@ -338,17 +253,6 @@
 				ctx.restore();
 			}
 
-			// liseré : la silhouette se devine sous la pluie
-			if (chemin) {
-				ctx.save();
-				ctx.strokeStyle = 'rgba(168,112,255,.28)';
-				ctx.lineWidth = 1.1;
-				ctx.shadowColor = 'rgba(123,61,255,.7)';
-				ctx.shadowBlur = 12;
-				ctx.stroke(chemin);
-				ctx.restore();
-			}
-
 			// bande de balayage
 			const yBalayage = cadres.y + balayage * cadres.h;
 			const gradBalayage = ctx.createLinearGradient(0, yBalayage - cadres.h * 0.06, 0, yBalayage + cadres.h * 0.06);
@@ -357,8 +261,6 @@
 			gradBalayage.addColorStop(1, 'rgba(123,61,255,0)');
 			ctx.fillStyle = gradBalayage;
 			ctx.fillRect(cadres.x, yBalayage - cadres.h * 0.06, cadres.w, cadres.h * 0.12);
-
-			ctx.restore();
 
 			ctx.restore();
 
