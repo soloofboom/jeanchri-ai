@@ -249,6 +249,43 @@ body.cursor-actif .cursor {
 	opacity: .45;
 }
 
+.nav-item { position: relative; }
+
+.nav-chev {
+	margin-left: 6px;
+	font-size: .85em;
+	opacity: .6;
+}
+
+.nav-menu {
+	position: absolute;
+	top: 100%;
+	left: 50%;
+	transform: translate(-50%, -6px);
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding: 18px 18px 16px;
+	background: rgba(7, 7, 10, .94);
+	border: 1px solid rgba(255, 255, 255, .16);
+	backdrop-filter: blur(14px);
+	-webkit-backdrop-filter: blur(14px);
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity .18s, transform .18s, visibility .18s;
+}
+
+.nav-item:hover .nav-menu,
+.nav-item:focus-within .nav-menu {
+	opacity: 1;
+	visibility: visible;
+	transform: translate(-50%, 0);
+}
+
+@media (hover: none) {
+	.nav-chev { display: none; }
+}
+
 .back {
 	justify-self: end;
 	display: inline-flex;
