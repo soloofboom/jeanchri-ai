@@ -54,6 +54,8 @@
 	if (toile) {
 		const ctx = toile.getContext('2d');
 		const graine = Math.random() * 100000;
+		const JEU = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*+=<>/\\|_-.:;!?[]{}()^~";
+		const caractere = () => JEU[Math.floor(Math.random() * JEU.length)];
 
 		let L = 0;
 		let H = 0;
@@ -62,23 +64,33 @@
 		let poussieres = [];
 		let lumiere = null;
 		let asciiFond = null;
+		let asciiCtx = null;
+		let cases = [];
+		let gouttes = [];
+		let cols = 0;
+		let rangs = 0;
+		let celW = 0;
+		let celH = 0;
+		let dernierTemps = 0;
 		const curseur = { x: -9999, y: -9999, dans: false };
 		
 		let cadres = { x: 0, y: 0, w: 0, h: 0 };
 		let decalage = 0;
 		let decalageCible = 0;
 
-		// profil en coordonnées normalisées (0..1), face tournée vers la gauche
-		// demi-silhouette droite (de dos) ; la gauche est obtenue par miroir
+		// buste en coordonnées normalisées (0..1) : crâne arrondi, mâchoire
+		// resserrée, nuque étroite puis épaules. La gauche est un miroir.
 		const demi = [
-			[0.500, 0.028], [0.552, 0.031], [0.604, 0.042], [0.650, 0.064],
-			[0.686, 0.100], [0.708, 0.146], [0.719, 0.198], [0.722, 0.248],
-			[0.716, 0.290],
-			[0.702, 0.330], [0.680, 0.362], [0.664, 0.386], [0.648, 0.402],
-			[0.634, 0.418], [0.628, 0.442], [0.640, 0.460], [0.672, 0.476],
-			[0.722, 0.492], [0.772, 0.510], [0.815, 0.536], [0.860, 0.575],
-			[0.892, 0.624], [0.915, 0.690], [0.930, 0.780], [0.940, 0.900],
-			[0.945, 1.150]
+			[0.500, 0.022], [0.534, 0.024], [0.568, 0.030], [0.600, 0.042],
+			[0.630, 0.060], [0.656, 0.086], [0.676, 0.118], [0.690, 0.154],
+			[0.698, 0.192], [0.700, 0.230], [0.694, 0.266], [0.683, 0.298],
+			[0.668, 0.326], [0.650, 0.350], [0.630, 0.371], [0.612, 0.389],
+			[0.598, 0.406], [0.588, 0.424], [0.583, 0.442],
+			[0.584, 0.461], [0.588, 0.483], [0.591, 0.505],
+			[0.600, 0.527], [0.620, 0.545], [0.651, 0.559],
+			[0.698, 0.573], [0.750, 0.592], [0.800, 0.620],
+			[0.845, 0.658], [0.880, 0.708], [0.907, 0.772],
+			[0.926, 0.850], [0.938, 0.946], [0.946, 1.100]
 		];
 
 		const profil = demi.concat(
@@ -135,26 +147,23 @@
 			lumiere.addColorStop(0.78, 'rgba(242,240,250,.10)');
 			lumiere.addColorStop(1.00, 'rgba(242,240,250,.02)');
 
-			// fond : la silhouette tapissée de caractères pâles
-			const celW = Math.max(7, Math.round(cadres.w / 46));
-			const celH = Math.round(celW * 1.9);
-			const cols = Math.floor(cadres.w / celW);
-			const rangs = Math.floor(cadres.h / celH);
+			// pluie de caractères : grille de colonnes, tête lumineuse + traînée
+			celW = Math.max(8, Math.round(cadres.w / 42));
+			celH = Math.round(celW * 1.85);
+			cols = Math.max(1, Math.floor(cadres.w / celW));
+			rangs = Math.max(1, Math.floor(cadres.h / celH));
 			asciiFond = document.createElement('canvas');
 			asciiFond.width = cols * celW;
 			asciiFond.height = rangs * celH;
-			const cf = asciiFond.getContext('2d');
-			cf.font = `${(celW / 0.6).toFixed(1)}px "JetBrains Mono", ui-monospace, monospace`;
-			cf.textBaseline = 'top';
-			const jeu = '.:-=+*';
-			for (let r = 0; r < rangs; r++) {
-				for (let c = 0; c < cols; c++) {
-					if (Math.random() < 0.22) continue;
-					const ch = jeu[Math.floor(Math.random() * jeu.length)];
-					cf.fillStyle = `rgba(190,175,235,${(0.12 + Math.random() * 0.22).toFixed(3)})`;
-					cf.fillText(ch, c * celW, r * celH);
-				}
-			}
+			asciiCtx = asciiFond.getContext('2d');
+			asciiCtx.font = `${(celW / 0.6).toFixed(1)}px "JetBrains Mono", ui-monospace, monospace`;
+			asciiCtx.textBaseline = 'top';
+			cases = Array.from({ length: cols * rangs }, caractere);
+			gouttes = Array.from({ length: cols }, () => ({
+				y: Math.random() * (rangs + 10) - 10,
+				v: 8 + Math.random() * 12,
+				len: 8 + Math.floor(Math.random() * 15)
+			}));
 
 			poussieres = Array.from({ length: L < 520 ? 16 : 30 }, () => ({
 				x: Math.random() * L,
@@ -165,7 +174,70 @@
 			}));
 		};
 
+		// une colonne de pluie = une tête qui descend, suivie d'une traînée
+		const dessinerPluie = (dt, survol) => {
+			if (!asciiCtx) return;
+			const cf = asciiCtx;
+			cf.clearRect(0, 0, asciiFond.width, asciiFond.height);
+
+			for (let c = 0; c < cols; c++) {
+				const g = gouttes[c];
+				g.y += g.v * dt;
+				if (g.y - g.len > rangs) {
+					g.y = -Math.random() * rangs * 0.5;
+					g.v = 8 + Math.random() * 12;
+					g.len = 8 + Math.floor(Math.random() * 15);
+				}
+
+				const tete = Math.floor(g.y);
+				for (let k = 0; k < g.len; k++) {
+					const r = tete - k;
+					if (r < 0 || r >= rangs) continue;
+
+					const f = 1 - k / g.len;
+					const a = Math.pow(f, 1.6) * 0.92;
+					let couleur;
+					if (k === 0) couleur = `rgba(232,206,255,${a.toFixed(3)})`;
+					else if (k < 3) couleur = `rgba(198,150,255,${a.toFixed(3)})`;
+					else couleur = `rgba(146,80,255,${(a * 0.85).toFixed(3)})`;
+
+					cf.fillStyle = couleur;
+					cf.fillText(cases[c * rangs + r], c * celW, r * celH);
+				}
+			}
+
+			// sous le curseur, les signes s'allument (même hors des traînées)
+			if (survol) {
+				const c0 = Math.max(0, Math.floor((survol.x - survol.r) / celW));
+				const c1 = Math.min(cols - 1, Math.ceil((survol.x + survol.r) / celW));
+				const r0 = Math.max(0, Math.floor((survol.y - survol.r) / celH));
+				const r1 = Math.min(rangs - 1, Math.ceil((survol.y + survol.r) / celH));
+				cf.shadowColor = 'rgba(198,158,255,.9)';
+				cf.shadowBlur = 9;
+				for (let c = c0; c <= c1; c++) {
+					for (let r = r0; r <= r1; r++) {
+						const dx = c * celW + celW / 2 - survol.x;
+						const dy = r * celH + celH / 2 - survol.y;
+						const d = Math.hypot(dx, dy);
+						if (d > survol.r) continue;
+						const e = 1 - d / survol.r;
+						cf.fillStyle = `rgba(240,228,255,${(e * e * 1.05).toFixed(3)})`;
+						cf.fillText(cases[c * rangs + r], c * celW, r * celH);
+					}
+				}
+				cf.shadowBlur = 0;
+			}
+
+			const mutations = Math.max(1, Math.round(cols * rangs * 0.012));
+			for (let i = 0; i < mutations; i++) {
+				cases[Math.floor(Math.random() * cases.length)] = caractere();
+			}
+		};
+
 		const dessiner = (temps) => {
+			const dt = Math.min(0.05, Math.max(0, (temps - dernierTemps) / 1000));
+			dernierTemps = temps;
+
 			ctx.clearRect(0, 0, L, H);
 
 			const souffle = Math.sin(temps * 0.0004) * 2.2;
@@ -177,6 +249,18 @@
 				ctx.restore();
 			}
 			const balayage = ((temps * 0.000055) % 1.25) - 0.12;
+			const rayonEclat = Math.min(cadres.w, cadres.h) * 0.34;
+
+			dessinerPluie(
+				dt,
+				curseur.dans
+					? {
+							x: curseur.x - decalage - cadres.x,
+							y: curseur.y - souffle - cadres.y,
+							r: rayonEclat
+						}
+					: null
+			);
 
 			ctx.save();
 			ctx.translate(decalage, souffle);
@@ -214,7 +298,7 @@
 			// hachurage de scan, très effacé
 			const pas = Math.max(2.4, cadres.h / 170);
 			ctx.strokeStyle = lumiere;
-			ctx.globalAlpha = 0.35;
+			ctx.globalAlpha = 0.18;
 			ctx.lineWidth = 0.7;
 			ctx.beginPath();
 			for (let y = cadres.y; y < cadres.y + cadres.h; y += pas) {
@@ -224,32 +308,44 @@
 			ctx.stroke();
 			ctx.globalAlpha = 1;
 
-			// tapisserie de caractères pâles
+			// la pluie mauve
 			if (asciiFond) {
-				ctx.globalAlpha = 0.55;
+				ctx.globalAlpha = 0.8;
 				ctx.drawImage(asciiFond, cadres.x, cadres.y, asciiFond.width, asciiFond.height);
 				ctx.globalAlpha = 1;
 			}
 
-			// lumière qui suit le curseur
+			// halo + repassage additif : les signes brillent sous le curseur
 			if (curseur.dans && asciiFond) {
-				const r = Math.min(cadres.w, cadres.h) * 0.40;
-				const haloCurseur = ctx.createRadialGradient(curseur.x, curseur.y, 0, curseur.x, curseur.y, r);
-				haloCurseur.addColorStop(0, 'rgba(178,132,255,.62)');
-				haloCurseur.addColorStop(0.45, 'rgba(123,61,255,.26)');
+				const hcx = curseur.x - decalage;
+				const hcy = curseur.y - souffle;
+				const haloCurseur = ctx.createRadialGradient(hcx, hcy, 0, hcx, hcy, rayonEclat);
+				haloCurseur.addColorStop(0, 'rgba(160,110,255,.20)');
+				haloCurseur.addColorStop(0.55, 'rgba(123,61,255,.08)');
 				haloCurseur.addColorStop(1, 'rgba(123,61,255,0)');
 				ctx.fillStyle = haloCurseur;
 				ctx.beginPath();
-				ctx.arc(curseur.x, curseur.y, r, 0, Math.PI * 2);
+				ctx.arc(hcx, hcy, rayonEclat, 0, Math.PI * 2);
 				ctx.fill();
 
 				ctx.save();
 				ctx.beginPath();
-				ctx.arc(curseur.x, curseur.y, r * 0.8, 0, Math.PI * 2);
+				ctx.arc(hcx, hcy, rayonEclat, 0, Math.PI * 2);
 				ctx.clip();
-				ctx.globalAlpha = 1;
+				ctx.globalCompositeOperation = 'lighter';
+				ctx.globalAlpha = 0.35;
 				ctx.drawImage(asciiFond, cadres.x, cadres.y, asciiFond.width, asciiFond.height);
-				ctx.globalAlpha = 1;
+				ctx.restore();
+			}
+
+			// liseré : la silhouette se devine sous la pluie
+			if (chemin) {
+				ctx.save();
+				ctx.strokeStyle = 'rgba(168,112,255,.28)';
+				ctx.lineWidth = 1.1;
+				ctx.shadowColor = 'rgba(123,61,255,.7)';
+				ctx.shadowBlur = 12;
+				ctx.stroke(chemin);
 				ctx.restore();
 			}
 
@@ -275,10 +371,11 @@
 		const dimensionner = () => {
 			construire();
 			decalage = 0;
+			if (mouvementReduit) dessiner(performance.now());
 		};
 
 		dimensionner();
-		requestAnimationFrame(dessiner);
+		if (!mouvementReduit) requestAnimationFrame(dessiner);
 
 		window.addEventListener('resize', dimensionner);
 		if (document.fonts && document.fonts.ready) document.fonts.ready.then(dimensionner);
