@@ -243,6 +243,12 @@ body.cursor-actif .cursor {
 	color: var(--accent);
 }
 
+.nav-sep {
+	margin: 0 -8px;
+	color: var(--accent);
+	opacity: .45;
+}
+
 .back {
 	justify-self: end;
 	display: inline-flex;
@@ -847,16 +853,11 @@ body.cursor-actif .cursor {
 
 /* ---------- petits écrans ---------- */
 
-@media (max-width: 800px) {
-	.nav a.section { display: none; }
-}
-
 @media (max-width: 640px) {
 	.bar {
 		grid-template-columns: 1fr auto;
 		padding: 16px var(--marge);
 	}
-	.nav a.section { display: none; }
 	.back { display: none; }
 	.back span { max-width: none; }
 	.mark { font-size: 21px; }
