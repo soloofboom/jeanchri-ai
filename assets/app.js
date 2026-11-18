@@ -61,7 +61,6 @@
 		let chemin = null;
 		let poussieres = [];
 		let lumiere = null;
-		let ascii = null;
 		let asciiFond = null;
 		const curseur = { x: -9999, y: -9999, dans: false };
 		
@@ -85,33 +84,6 @@
 		const profil = demi.concat(
 			demi.slice(0, -1).reverse().map(([x, y]) => [1 - x, y])
 		);
-
-		// logo Rif (grenouille) rendu en ASCII, 54 colonnes
-		const RIF = [
-			'                                 -%@@@@%-    :%@@@@=    ',
-			'                                %@@*--+%@%  -@@=. .--   ',
-			'                               #%: :---- -%@@#+:=%@@@   ',
-			'                             .*=-@@@@@@@@#:@@@@@@@*=-   ',
-			'                           .#@@@:*@@@@@@#.@@@@@@@@@@@%: ',
-			'                         .%@@@@@@%==--+=%@@@@@@@@@@@@@@+',
-			'                       --.#@@@@@@@@@@@@@@@#:------------',
-			'                   -#@@@@@*.+@@@@@@@@@@@#:#@@@@@@@@@@@@=',
-			'               .+@@@@@@@@@@@%--%@@@@@@#:#@@@@@@@@@@@#-  ',
-			'             -%@@@@@@@@@@@@@@@@+.#@@%:*@@@@@@%:         ',
-			'           -@@@@@#-@@@@@@@@@@@@@@* .+@@@@@@@--%         ',
-			'         -:+%@@%:+%:-@@@@@@@@@@@%:*@@@@@@@-:%@-         ',
-			'       -@@@@#.:=@@@@@:-@@@@@@@%:*@@@@@@@-:%@@-          ',
-			'      #@@@@@:-@@@@@@@@@--@@@%:#@@@@@@@=:%@@@-           ',
-			'    .@@@@@:-@@@@@@@@@@@@@--:*@@@@@@@=:%@@@%.            ',
-			'   .@@@@--@@@@@@: *@@@@@@@@@@@@@@@+ #@@@@---            ',
-			'  .@@@--@@@@@@--@@+.#@@@@@@@@@@@+.= @@@=:@@@%           ',
-			'  @@--@@@@@@-:@@@@@@-.#@@@@@@@+.#@@ @+:%@@@@@*          ',
-			' .--@@@@@@=.%@@@@@@@@@-:%@@@+.#@@@%  :@@@@@@@@:         ',
-			' :@@*==*###*-:=#@@@@@@@%::*.#@@@@@@#=: :#@@@@@@@@@#*-   ',
-			'=#:*@@@@@@@@@@@+ -@@@@@@@%.:@@@@@@@@@@@@+:#@@@@@@@@@@@%-'
-		];
-
-		const RAMPE = ' .:-=+*#%@';
 
 		const courbe = (pts) => {
 			const p = new Path2D();
@@ -162,27 +134,6 @@
 			lumiere.addColorStop(0.48, 'rgba(242,240,250,.19)');
 			lumiere.addColorStop(0.78, 'rgba(242,240,250,.10)');
 			lumiere.addColorStop(1.00, 'rgba(242,240,250,.02)');
-
-			// calque ASCII du logo Rif, rendu une seule fois
-			const cibleW = cadres.w * 0.58;
-			const cellW = cibleW / RIF[0].length;
-			const cellH = cellW * 2;
-			ascii = document.createElement('canvas');
-			ascii.width = Math.ceil(cibleW);
-			ascii.height = Math.ceil(cellH * RIF.length);
-			const ca = ascii.getContext('2d');
-			ca.font = `${(cellW / 0.6).toFixed(1)}px "JetBrains Mono", ui-monospace, monospace`;
-			ca.textBaseline = 'top';
-			for (let r = 0; r < RIF.length; r++) {
-				for (let c = 0; c < RIF[r].length; c++) {
-					const ch = RIF[r][c];
-					if (ch === ' ') continue;
-					const densite = RAMPE.indexOf(ch);
-					const a = densite < 0 ? 0.28 : 0.10 + densite * 0.055;
-					ca.fillStyle = `rgba(168,120,255,${a.toFixed(3)})`;
-					ca.fillText(ch, c * cellW, r * cellH);
-				}
-			}
 
 			// fond : la silhouette tapissée de caractères pâles
 			const celW = Math.max(7, Math.round(cadres.w / 46));
@@ -280,15 +231,6 @@
 				ctx.globalAlpha = 1;
 			}
 
-			// logo Rif en ASCII, plus contrasté que la tapisserie
-			if (ascii) {
-				const ax = cadres.x + (cadres.w - ascii.width) / 2;
-				const ay = cadres.y + cadres.h * 0.66;
-				ctx.globalAlpha = 0.6 + Math.abs(balayage - 0.5) * 0.18;
-				ctx.drawImage(ascii, ax, ay);
-				ctx.globalAlpha = 1;
-			}
-
 			// lumière qui suit le curseur
 			if (curseur.dans && asciiFond) {
 				const r = Math.min(cadres.w, cadres.h) * 0.40;
@@ -307,7 +249,6 @@
 				ctx.clip();
 				ctx.globalAlpha = 1;
 				ctx.drawImage(asciiFond, cadres.x, cadres.y, asciiFond.width, asciiFond.height);
-				if (ascii) ctx.drawImage(ascii, cadres.x + (cadres.w - ascii.width) / 2, cadres.y + cadres.h * 0.66);
 				ctx.globalAlpha = 1;
 				ctx.restore();
 			}
