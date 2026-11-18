@@ -210,7 +210,7 @@ body.cursor-actif .cursor {
 	z-index: 80;
 	display: flex;
 	align-items: center;
-	justify-content: flex-end;
+	justify-content: center;
 	gap: clamp(20px, 4vw, 56px);
 	padding: 20px var(--marge);
 	mix-blend-mode: difference;
@@ -222,8 +222,8 @@ body.cursor-actif .cursor {
 	justify-content: center;
 	gap: clamp(12px, 2vw, 22px);
 	font-family: var(--mono);
-	font-size: 10px;
-	letter-spacing: .22em;
+	font-size: 11px;
+	letter-spacing: .2em;
 	text-transform: uppercase;
 }
 
@@ -284,18 +284,6 @@ body.cursor-actif .cursor {
 @media (hover: none) {
 	.nav-chev { display: none; }
 }
-
-.back {
-	justify-self: end;
-	display: inline-flex;
-	align-items: center;
-	gap: 8px;
-	font-size: 11px;
-	letter-spacing: .22em;
-	text-transform: uppercase;
-}
-
-.back svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.6; }
 
 /* ---------- hero ---------- */
 
@@ -891,9 +879,6 @@ body.cursor-actif .cursor {
 
 @media (max-width: 640px) {
 	.bar { padding: 16px var(--marge); }
-	.back { display: none; }
-	.back span { max-width: none; }
-
 	.titre { font-size: clamp(44px, 16.5vw, 120px); line-height: .88; }
 
 	.hero { padding-top: 96px; }
