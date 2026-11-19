@@ -24,24 +24,20 @@
 	align-items: center;
 	justify-content: center;
 	flex-wrap: wrap;
-	gap: 10px;
+	gap: 24px;
 }
 
 .rif-lien {
 	display: inline-flex;
 	align-items: center;
 	gap: 9px;
-	padding: 9px 16px 9px 13px;
-	border: 1px solid rgba(123, 61, 255, .5);
-	border-radius: 999px;
-	background: rgba(123, 61, 255, .1);
 	font-family: var(--mono);
 	font-size: 10px;
 	letter-spacing: .2em;
 	text-transform: uppercase;
 	/* mauve clair : le violet de marque #7b3dff ne tient que 3,7:1 sur le noir */
 	color: #b18cff;
-	transition: color .25s, border-color .25s, background-color .25s;
+	transition: color .25s;
 }
 
 .rif-lien svg {
@@ -52,8 +48,6 @@
 
 .rif-lien:hover {
 	color: var(--encre);
-	border-color: var(--accent);
-	background: rgba(123, 61, 255, .3);
 }
 
 #rif-logo {
