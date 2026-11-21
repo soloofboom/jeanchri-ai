@@ -7,25 +7,31 @@
 /* ---------- héros ---------- */
 
 .rif-hero {
+	position: relative;
 	min-height: 100svh;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 	gap: 18px;
-	padding: 95px 0 48px;
+	padding: 150px 0 48px;
 	text-align: center;
 }
 
-/* liens GitHub / PyPI, posés en haut du héros */
+/* liens GitHub / PyPI, posés en haut du héros, juste sous la barre */
 
 .rif-liens {
+	position: absolute;
+	top: clamp(78px, 10vh, 118px);
+	left: 50%;
+	transform: translateX(-50%);
+	width: max-content;
+	max-width: calc(100% - 2 * var(--marge));
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	flex-wrap: wrap;
 	gap: 24px;
-	margin-bottom: 25px;
 }
 
 .rif-lien {
@@ -355,6 +361,15 @@
 @media (max-width: 820px) {
 	.rif-hero { padding-top: 96px; }
 
+	/* sur petits écrans, les liens rentrent dans le flux pour ne rien chevaucher */
+	.rif-liens {
+		position: static;
+		transform: none;
+		width: auto;
+		max-width: none;
+		margin-bottom: 25px;
+	}
+
 	.rif-accroche {
 		grid-template-columns: 1fr;
 		align-items: start;
@@ -366,7 +381,7 @@
 	}
 
 	.rif-section {
-		grid-template-columns: 1fr;
+		grid-template-columns: minmax(0, 1fr);
 		gap: 12px;
 		padding-bottom: clamp(56px, 9vh, 90px);
 	}
@@ -410,4 +425,17 @@
 
 	.rif-trait,
 	.rif-fin a { transition: none; }
+}
+
+/* écrans larges mais bas : les liens reviennent dans le flux */
+@media (min-width: 821px) and (max-height: 720px) {
+	.rif-hero { padding-top: 96px; }
+
+	.rif-liens {
+		position: static;
+		transform: none;
+		width: auto;
+		max-width: none;
+		margin-bottom: 25px;
+	}
 }

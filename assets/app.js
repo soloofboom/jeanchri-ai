@@ -11,6 +11,18 @@
 
 	document.getElementById('annee').textContent = new Date().getFullYear();
 
+	/* ---------- en-tête qui se rétracte au défilement ---------- */
+
+	const entete = document.querySelector('.bar');
+
+	if (entete) {
+		const majEntete = () => {
+			entete.classList.toggle('bar-reduit', window.scrollY > 24);
+		};
+		window.addEventListener('scroll', majEntete, { passive: true });
+		majEntete();
+	}
+
 	/* ---------- 1. intro ---------- */
 
 	const intro = document.getElementById('intro');
