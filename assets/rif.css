@@ -31,16 +31,16 @@
 	align-items: center;
 	justify-content: center;
 	flex-wrap: wrap;
-	gap: 24px;
+	gap: 32px;
 }
 
 .rif-lien {
 	display: inline-flex;
 	align-items: center;
-	gap: 9px;
+	gap: 11px;
 	font-family: var(--mono);
-	font-size: 10px;
-	letter-spacing: .2em;
+	font-size: 12px;
+	letter-spacing: .18em;
 	text-transform: uppercase;
 	/* mauve clair : le violet de marque #7b3dff ne tient que 3,7:1 sur le noir */
 	color: #b18cff;
@@ -48,9 +48,19 @@
 }
 
 .rif-lien svg {
-	width: 17px;
-	height: 17px;
+	width: 26px;
+	height: 26px;
+	flex: 0 0 auto;
 	fill: currentColor;
+	/* le tracé reste net quand le logo est réduit */
+	shape-rendering: geometricPrecision;
+}
+
+/* le logo PyPI est un empilement de facettes avec des filets très fins :
+   sous ~30 px il se transforme en bouillie, d'où la taille supérieure */
+.rif-lien--pypi svg {
+	width: 34px;
+	height: 34px;
 }
 
 .rif-lien:hover {
