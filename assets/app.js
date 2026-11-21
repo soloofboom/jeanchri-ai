@@ -59,6 +59,16 @@
 
 	const barre = document.getElementById('progress-bar');
 
+	if (barre) {
+		const majBarre = () => {
+			const total = document.documentElement.scrollHeight - window.innerHeight;
+			barre.style.width = `${clamp(window.scrollY / (total || 1), 0, 1) * 100}%`;
+		};
+		window.addEventListener('scroll', majBarre, { passive: true });
+		window.addEventListener('resize', majBarre);
+		majBarre();
+	}
+
 	/* ---------- 3. pluie de caractères à droite du hero ---------- */
 
 	const toile = document.getElementById('portrait');
@@ -356,53 +366,60 @@
 		window.addEventListener('scroll', () => cadre.classList.remove('actif'), { passive: true });
 	}
 
-	/* ---------- 5. galerie horizontale pilotée au scroll ---------- */
+	/* ---------- 5. galerie : défilement horizontal natif ---------- */
 
-	const section = document.getElementById('galerie');
-	const rail = document.getElementById('rail');
+	const galerie = document.getElementById('galerie');
 
-	if (section && rail) {
-		let horizontal = false;
+	if (galerie) {
+		let saisie = false;
+		let glisse = false;
+		let departX = 0;
+		let departScroll = 0;
 
-		const distance = () => Math.max(0, rail.scrollWidth - window.innerWidth + 40);
+		galerie.addEventListener('pointerdown', (e) => {
+			if (e.pointerType !== 'mouse' || e.button !== 0) return;
+			saisie = true;
+			glisse = false;
+			departX = e.clientX;
+			departScroll = galerie.scrollLeft;
+		});
 
-		const dimensionner = () => {
-			horizontal = window.innerWidth > 900 && !mouvementReduit;
-			if (horizontal) {
-				section.style.height = `${window.innerHeight + distance()}px`;
-			} else {
-				section.style.height = '';
-				rail.style.transform = '';
-			}
+		window.addEventListener('pointermove', (e) => {
+			if (!saisie) return;
+			const dx = e.clientX - departX;
+			if (!glisse && Math.abs(dx) < 5) return;
+			glisse = true;
+			galerie.classList.add('saisie');
+			galerie.scrollLeft = departScroll - dx;
+		});
+
+		const lacher = () => {
+			if (!saisie) return;
+			saisie = false;
+			galerie.classList.remove('saisie');
 		};
 
-		const defiler = () => {
-			if (!horizontal) return;
-			const d = distance();
-			const depart = section.offsetTop;
-			const p = clamp((window.scrollY - depart) / (d || 1), 0, 1);
-			rail.style.transform = `translate3d(${-p * d}px, 0, 0)`;
-		};
+		window.addEventListener('pointerup', lacher);
+		window.addEventListener('pointercancel', lacher);
 
-		let attente = false;
-		const surScroll = () => {
-			if (attente) return;
-			attente = true;
-			requestAnimationFrame(() => {
-				defiler();
-				if (barre) {
-					const total = document.documentElement.scrollHeight - window.innerHeight;
-					barre.style.width = `${clamp(window.scrollY / (total || 1), 0, 1) * 100}%`;
-				}
-				attente = false;
+		/* un glissement ne doit pas déclencher le lien survolé */
+		galerie.addEventListener('click', (e) => {
+			if (!glisse) return;
+			e.preventDefault();
+			e.stopPropagation();
+			glisse = false;
+		}, true);
+
+		/* flèches gauche / droite */
+		galerie.addEventListener('keydown', (e) => {
+			if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+			e.preventDefault();
+			const pas = galerie.clientWidth * 0.6;
+			galerie.scrollBy({
+				left: e.key === 'ArrowRight' ? pas : -pas,
+				behavior: mouvementReduit ? 'auto' : 'smooth'
 			});
-		};
-
-		dimensionner();
-		defiler();
-		window.addEventListener('scroll', surScroll, { passive: true });
-		window.addEventListener('resize', () => { dimensionner(); defiler(); });
-		window.addEventListener('load', () => { dimensionner(); defiler(); });
+		});
 	}
 
 	/* ---------- 6. apparitions au scroll ---------- */
